@@ -25,3 +25,7 @@ def _db_close(exc):
         print(db)
         print(db.close())
     return exc
+
+# @app.route("/")
+# def home():
+#     return render_template("home.html")

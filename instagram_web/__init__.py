@@ -1,8 +1,9 @@
 from app import app
-from flask import render_template
+from flask import render_template, redirect, request, url_for, flash
 from instagram_web.blueprints.users.views import users_blueprint
 from flask_assets import Environment, Bundle
 from .util.assets import bundles
+from models import user
 
 assets = Environment(app)
 assets.register(bundles)
@@ -17,3 +18,20 @@ def internal_server_error(e):
 @app.route("/")
 def home():
     return render_template('home.html')
+
+@app.route("/signup")
+def signup():
+    return render_template('signup.html')
+
+@app.route("/signup_form", methods=["POST"])
+def signup_form():
+    username = request.form.get('username')
+    email = request.form.get('email')
+    password = request.form.get('password')
+    new_user = user.User(username=username, email=email, password=password)
+    
+    if new_user.save():
+        return redirect('signup')
+
+    else:
+        return render_template('signup.html')

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <link rel="shortcut icon" href="{{ url_for('static', filename='image/favicon.ico') }}">
+    <link href='https://fonts.googleapis.com/css?family=Permanent Marker' rel='stylesheet'>
 
     {% assets "home_css" %}
       <link rel="stylesheet" href="{{ ASSET_URL }}">
@@ -13,18 +14,28 @@
     {% assets "home_js" %}
       <script type="text/javascript" src="{{ ASSET_URL }}"></script>
     {% endassets %}
-
+    
     {% block header %}
+    <h1 style="font-family: 'Permanent Marker';font-size: 30px">NEXTAGRAM</h1>
+    <nav class="nav">
+      <a class="nav-link" href="{{url_for('home')}}">Home</a>
+      <a class="nav-link active" href="{{url_for('signup')}}">Sign Up</a>
+      <a class="nav-link" href="#">Link</a>
+      <a class="nav-link" href="#">Link</a>
+      {#<a class="nav-link disabled" href="#">Disabled</a>#}
+    </nav>
     {% endblock %}
 
     <title>
       {% block title %}
-      {% endblock %}NEXTAGRAM
+      {% endblock %}
     </title>
 
   </head>
   <body>
+
     {% block content %}
+    
     {% endblock %}
     <footer>
       Made with &hearts; at <a target="_blank" href="https://www.nextacademy.com/?utm_source=github&utm_medium=student-challenge&utm_campaign=flask-nextagram">NEXT Academy</a>
