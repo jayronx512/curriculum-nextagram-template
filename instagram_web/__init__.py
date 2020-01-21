@@ -4,12 +4,15 @@ from instagram_web.blueprints.users.views import users_blueprint
 from flask_assets import Environment, Bundle
 from .util.assets import bundles
 from models import user
-import re
+from flask_wtf.csrf import CSRFProtect
+# import re
+# from werkzeug.security import generate_password_hash
 
 assets = Environment(app)
 assets.register(bundles)
 
 app.register_blueprint(users_blueprint, url_prefix="/users")
+csrf = CSRFProtect(app)
 
 @app.errorhandler(500)
 def internal_server_error(e):
@@ -28,27 +31,50 @@ def signup():
 def signup_form():
     username = request.form.get('username')
     email = request.form.get('email')
-    while True:
-        password = request.form.get('password')
-        if len(password) < 6:
-            flash('Make sure your password is at least 6 letters')
-            password_error = True
-            return render_template('signup.html', password_error = password_error)
-        elif re.search('[0-9]',password) is None:
-            flash('Make sure your password has a number in it')
-            password_error = True
-            return render_template('signup.html', password_error = password_error)
-        elif re.search('[A-Z]', password) is None:
-            flash('Make sure your password has a capital letter in it')
-            password_error = True
-            return render_template('signup.html', password_error = password_error)
-        elif re.search("[$&+,:;=?@#\"\\/|'<>.^*()%!-]", password) is None:
-            flash('Make sure your password has special character in it')
-            password_error = True
-            return render_template('signup.html', password_error = password_error)
-        else:
-            new_user = user.User(username=username, email=email, password=password)
-            break
+    password = request.form.get('password')
+    retype_password = request.form.get('retype_password')
+    # hashed_password = generate_password_hash(password)
+    if password != retype_password:
+        flash('Password and Retyped Password are different')
+        password_error = True
+        return render_template('signup.html', password_error = password_error)
+    new_user = user.User(username=username, email=email, password=password)
+
+
+    # while True: 
+    #     if re.search('[A-Za-z0-9._%+-]+@+[A-Za-z]+[.]+[c][o][m]', email) is None:
+    #         flash('Make sure your email is valid!')
+    #         password_error = True
+    #         return render_template('signup.html', password_error = password_error)
+        
+    #     else: 
+    #         break
+    # password = request.form.get('password')
+    # retype_password = request.form.get('retype_password')
+ 
+
+    # else: 
+    #     while password == retype_password:
+    #         if len(password) < 6:
+    #             flash('Make sure your password is at least 6 letters')
+    #             password_error = True
+    #             return render_template('signup.html', password_error = password_error)
+    #         elif re.search('[0-9]',password) is None:
+    #             flash('Make sure your password has a number in it')
+    #             password_error = True
+    #             return render_template('signup.html', password_error = password_error)
+    #         elif re.search('[A-Z]', password) is None:
+    #             flash('Make sure your password has a capital letter in it')
+    #             password_error = True
+    #             return render_template('signup.html', password_error = password_error)
+    #         elif re.search("[$&+,:;=?@#\"\\/|'<>.^*()%!-]", password) is None:
+    #             flash('Make sure your password has special character in it')
+    #             password_error = True
+    #             return render_template('signup.html', password_error = password_error)
+    #         else:
+    #             hashed_password = generate_password_hash(password)
+    #             new_user = user.User(username=username, email=email, password=hashed_password)
+    #             break
     
     if new_user.save():
         flash('New user created!')
@@ -57,5 +83,5 @@ def signup_form():
     else:
         for err in new_user.errors:
             flash(err)
-        # flash(user.User.errors[0])
+    #     # flash(user.User.errors[0])
         return render_template('signup.html', errors=new_user.errors)
