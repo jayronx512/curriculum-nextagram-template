@@ -24,6 +24,40 @@
       <a class="nav-link" href="#">Link</a>
       {#<a class="nav-link disabled" href="#">Disabled</a>#}
     </nav>
+    {%if errors%}
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="alert alert-danger" role="alert">
+        {% for message in messages %}
+          {{ message }}
+        {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% elif password_error%}
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="alert alert-warning" role="alert">
+      {% for message in messages %}
+        {{ message }}
+      {% endfor %}
+      </div>
+    {% endif %}
+    {% endwith %}
+    
+    {% else %}  
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="alert alert-success" role="alert">
+      {% for message in messages %}
+        {{ message }}
+      {% endfor %}
+      </div>
+    {% endif %}
+    {% endwith %}
+
+    {% endif %}
     {% endblock %}
 
     <title>
