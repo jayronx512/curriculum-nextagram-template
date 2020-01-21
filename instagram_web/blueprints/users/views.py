@@ -3,6 +3,7 @@ from flask import Blueprint, render_template, request, url_for, flash, redirect
 from models import user
 from flask_wtf.csrf import CSRFProtect
 
+
 csrf = CSRFProtect(app)
 
 users_blueprint = Blueprint('users',
@@ -69,6 +70,7 @@ def signup_form():
     else:
         for err in new_user.errors:
             flash(err)
+            
     #     # flash(user.User.errors[0])
         return render_template('users/new.html', errors=new_user.errors)
 

@@ -20,8 +20,8 @@
     <nav class="nav">
       <a class="nav-link" href="{{url_for('home')}}">Home</a>
       <a class="nav-link active" href="{{url_for('users.signup')}}">Sign Up</a>
-      <a class="nav-link" href="#">Link</a>
-      <a class="nav-link" href="#">Link</a>
+      <a class="nav-link" href="{{url_for('sessions.login')}}">Login</a>
+      <a class="nav-link" href="{{url_for('sessions.logout')}}">Logout</a>
       {#<a class="nav-link disabled" href="#">Disabled</a>#}
     </nav>
     {%if errors%}
@@ -30,6 +30,7 @@
         <div class="alert alert-danger" role="alert">
         {% for message in messages %}
           {{ message }}
+          <br />
         {% endfor %}
         </div>
       {% endif %}
@@ -38,10 +39,12 @@
     {% elif password_error%}
     {% with messages = get_flashed_messages() %}
     {% if messages %}
-      <div class="alert alert-warning" role="alert">
+      <div class="alert alert-danger" role="alert">
       {% for message in messages %}
         {{ message }}
+        <br />
       {% endfor %}
+      
       </div>
     {% endif %}
     {% endwith %}
@@ -52,7 +55,9 @@
       <div class="alert alert-success" role="alert">
       {% for message in messages %}
         {{ message }}
+        <br />
       {% endfor %}
+      
       </div>
     {% endif %}
     {% endwith %}
