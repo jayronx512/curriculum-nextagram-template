@@ -2,6 +2,7 @@ from app import app
 from flask import Blueprint, render_template, request, url_for, flash, redirect
 from models import user
 from flask_wtf.csrf import CSRFProtect
+from flask_login import login_user
 
 
 csrf = CSRFProtect(app)
@@ -65,7 +66,8 @@ def signup_form():
     
     if new_user.save():
         flash('New user created!')
-        return redirect(url_for('users.signup'))
+        login_user(new_user)
+        return redirect(url_for('home'))
 
     else:
         for err in new_user.errors:

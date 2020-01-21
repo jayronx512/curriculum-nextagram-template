@@ -1,6 +1,6 @@
 import os
 import config
-from flask import Flask
+from flask import Flask, render_template
 from models.base_model import db
 from flask_login import login_manager
 from models.user import User
@@ -37,6 +37,8 @@ def _db_close(exc):
 @login_manager.user_loader
 def load_user(user_id):
     return User.get_by_id(user_id)
+
+
 
 # @app.route("/")
 # def home():
