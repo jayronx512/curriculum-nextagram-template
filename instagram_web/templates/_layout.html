@@ -33,16 +33,21 @@
         </button>
         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
           <a><form action="{{url_for('sessions.edit')}}">
-            <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
             <button type="submit" class="nav-link" style="margin: 0;border: none; color: #007BFF; cursor: pointer;background-color: inherit;">Edit Username</button>
             </form> </a>
           <a> <form action="{{url_for('sessions.edit_email')}}">
-            <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
             <button type="submit" class="nav-link" style="margin: 0;border: none; color: #007BFF; cursor: pointer;background-color: inherit;">Edit Email</button>
             </form></a>
-          <a class="dropdown-item" href="#">#</a>
+          <a> <form action="{{url_for('sessions.edit_pw')}}">
+            <button type="submit" class="nav-link" style="margin: 0;border: none; color: #007BFF; cursor: pointer;background-color: inherit;">Edit Password</button>
+            </form></a>
         </div>
       </div>
+      
+      <form action="{{url_for('sessions.upload')}}">
+        
+        <button type="submit" class="nav-link" style="margin: 0;border: none; color: #007BFF; cursor: pointer;background-color: inherit;">Upload</button>
+        </form>
       
       {% else %}
       

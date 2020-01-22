@@ -9,6 +9,9 @@ Home
   <h1>Homepage</h1>
   {% if current_user.is_authenticated %} 
   Hi {{current_user.username}}
+  <br />
+  Your current email is: {{current_user.email}}
+
   {% endif %}
   
 {#{%endif%}#}
