@@ -20,9 +20,35 @@
     <nav class="nav">
       <a class="nav-link" href="{{url_for('home')}}">Home</a>
       <a class="nav-link active" href="{{url_for('users.signup')}}">Sign Up</a>
+      {% if current_user.is_authenticated %} 
+      
+      <form action="{{url_for('sessions.logout')}}" method = "POST">
+      <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
+      <button type="submit" class="nav-link" style="margin: 0;border: none; color: #007BFF; cursor: pointer;background-color: inherit;">Logout</button>
+      </form>
+
+      <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="margin: 0;border: none; color: #007BFF; cursor: pointer;background-color: inherit;">
+          Edit
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          <a><form action="{{url_for('sessions.edit')}}">
+            <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
+            <button type="submit" class="nav-link" style="margin: 0;border: none; color: #007BFF; cursor: pointer;background-color: inherit;">Edit Username</button>
+            </form> </a>
+          <a> <form action="{{url_for('sessions.edit_email')}}">
+            <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
+            <button type="submit" class="nav-link" style="margin: 0;border: none; color: #007BFF; cursor: pointer;background-color: inherit;">Edit Email</button>
+            </form></a>
+          <a class="dropdown-item" href="#">#</a>
+        </div>
+      </div>
+      
+      {% else %}
+      
       <a class="nav-link" href="{{url_for('sessions.login')}}">Login</a>
-      <a class="nav-link" href="{{url_for('sessions.logout')}}">Logout</a>
-      {#<a class="nav-link disabled" href="#">Disabled</a>#}
+      {% endif %}
+      {#<a class="nav-link disabled" href="#" >Disabled</a>#}
     </nav>
     {%if errors%}
     {% with messages = get_flashed_messages() %}
