@@ -3,6 +3,9 @@ from flask import Blueprint, render_template, request, url_for, flash, redirect
 from models import user
 from flask_wtf.csrf import CSRFProtect
 from flask_login import login_user
+from werkzeug.utils import secure_filename
+from helpers import upload_file_to_s3, allowed_file
+from config import S3_BUCKET
 
 
 csrf = CSRFProtect(app)
@@ -75,6 +78,29 @@ def signup_form():
             
     #     # flash(user.User.errors[0])
         return render_template('users/new.html', errors=new_user.errors)
+
+@users_blueprint.route('/upload')
+def upload():
+    return render_template('users/upload.html')
+
+@users_blueprint.route('/upload_form', methods = ["POST"])
+def upload_form():
+    if "user_file" not in request.files:
+        return flash('No user_file key in request.files')
+    
+    file = request.files["user_file"]
+
+    if file.filename == "":
+        return flash('Please select a file')
+
+    if file and allowed_file(file.filename):
+        file.filename = secure_filename(file.filename)
+        # breakpoint()
+        output = upload_file_to_s3(file, S3_BUCKET)
+        return str(output)
+    
+    else: 
+        return redirect(url_for('users.upload'))
 
 
 @users_blueprint.route('/new', methods=['GET'])

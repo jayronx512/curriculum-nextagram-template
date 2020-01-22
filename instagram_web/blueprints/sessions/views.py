@@ -3,13 +3,9 @@ from flask import Blueprint, render_template, request, url_for, flash, redirect
 from models.user import User
 from flask_wtf.csrf import CSRFProtect
 from werkzeug.security import generate_password_hash, check_password_hash
-from werkzeug.utils import secure_filename
 from flask_login import login_user, logout_user, current_user
 import re
 import boto3, botocore
-from helpers import upload_file_to_s3, allowed_file
-from config import S3_BUCKET
-
 
 
 
@@ -182,28 +178,7 @@ def edit_pw_form():
         flash('No user logged in')
         return render_template('sessions/edit_pw.html')
 
-@sessions_blueprint.route('/upload')
-def upload():
-    return render_template('sessions/upload.html')
 
-@sessions_blueprint.route('/upload_form', methods = ["POST"])
-def upload_form():
-    if "user_file" not in request.files:
-        return flash('No user_file key in request.files')
-    
-    file = request.files["user_file"]
-
-    if file.filename == "":
-        return flash('Please select a file')
-
-    if file and allowed_file(file.filename):
-        file.filename = secure_filename(file.filename)
-        # breakpoint()
-        output = upload_file_to_s3(file, S3_BUCKET)
-        return str(output)
-    
-    else: 
-        return redirect(url_for('sessions.upload'))
         
 
 # def upload_file_to_s3(file, bucket_name = "jj-clone-instagram", acl="public-read"):
