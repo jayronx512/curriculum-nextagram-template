@@ -40,14 +40,13 @@ def login_form():
                 login_user(account)
                 flash('Login successfully!', 'success')
                 # breakpoint()
-                return render_template('home.html')
+                return redirect(url_for('home'))
             else:
                 flash('Wrong username or password', 'danger')
                 return render_template('sessions/new.html')
-        # else:
-        #     flash('Wrong username or password')
-        #     password_error = True
-        #     return render_template('sessions/new.html')
+        
+    flash('Wrong username or password', 'danger')
+    return render_template('sessions/new.html')
 
 
 @sessions_blueprint.route("/logout", methods=["POST"])
@@ -56,117 +55,7 @@ def logout():
     flash('Successfully logout!', 'success')
     return redirect(url_for('home'))
         
-@sessions_blueprint.route("/edit")
-def edit():
-    return render_template('edit.html')
 
-@sessions_blueprint.route("/edit_email")
-def edit_email():
-    return render_template('sessions/edit_email.html')
-
-@sessions_blueprint.route("/edit_password")
-def edit_pw():
-    return render_template('sessions/edit_pw.html')
-
-@sessions_blueprint.route("/edit_form", methods = ["POST"])
-def edit_form(): 
-    new_username = request.form.get("new_username")
-    check_password = request.form.get("check_password")
-    check_retype_password = request.form.get("check_retype_password")
-    # breakpoint()
-    if current_user.is_authenticated: 
-        if check_password == check_retype_password: 
-            if check_password_hash(current_user.password, check_password):
-                query = User.update(username=new_username).where(User.id == current_user.id)
-                # breakpoint()
-                if query.execute():
-                    flash('Username changed!', 'success')
-                    return redirect(url_for('home'))
-
-                else:
-                    flash('Invalid username input', 'danger')
-                    return render_template('edit.html')
-            else:
-                flash('Incorrect Password', 'danger')
-                return render_template('edit.html')
-        else: 
-            flash('Password and retyped password are different', 'warning')
-            return render_template('edit.html')
-
-    else: 
-        flash('No user logged in', 'danger')
-        return render_template('edit.html')
-
-@sessions_blueprint.route("/edit_email", methods = ["POST"])
-def edit_email_form(): 
-    new_email = request.form.get("new_email")
-    check_password = request.form.get("check_password")
-    check_retype_password = request.form.get("check_retype_password")
-    if current_user.is_authenticated: 
-        if re.search('[A-Za-z0-9._%+-]+@+[A-Za-z]+[.]+[c][o][m]', new_email) is not None:
-            if check_password == check_retype_password: 
-                if check_password_hash(current_user.password, check_password):
-                    query = User.update(email=new_email).where(User.id == current_user.id)
-                    if query.execute():
-                        flash('Email changed!')
-                        return redirect(url_for('home'))
-                    else:
-                        flash('Invalid email input', 'danger')
-                        return render_template('sessions/edit_email.html')
-                else:
-                    flash('Incorrect Password', 'danger')
-    
-                    return render_template('sessions/edit_email.html')
-            else: 
-                flash('Password and retyped password are different', 'warning')
-
-                return render_template('sessions/edit_email.html')
-        else: 
-            flash('Invalid email', 'danger')
-            return render_template('sessions/edit_email.html')
-
-    else: 
-        flash('No user logged in', 'error')
-        return render_template('sessions/edit_email.html')
-
-@sessions_blueprint.route("/edit_pw", methods = ["POST"])
-def edit_pw_form(): 
-    old_password = request.form.get("old_password")
-    check_password = request.form.get("check_old_password")
-    new_password = request.form.get("new_password")
-    if current_user.is_authenticated: 
-        # if re.search("[A-Za-z0-9$&+,:;=?@#\"\\/|'<>.^*()%!-]", new_password) is None:
-        if len(new_password) < 6:
-            flash('Password has to at least 6 characters', 'warning')
-            return render_template('sessions/edit_pw.html')
-        elif re.search('[0-9]', new_password) is None:
-            flash('Password must have at least 1 number!', 'warning')
-            return render_template('sessions/edit_pw.html')
-        elif re.search('[A-Z]', new_password) is None:
-            flash('Password must have at least 1 capital letter!', 'warning')
-            return render_template('sessions/edit_pw.html')
-        elif re.search("[$&+,:;=?@#\"\\/|'<>.^*()%!-]", new_password) is None:
-            flash('Password must have at least 1 special character!', 'warning')
-            return render_template('sessions/edit_pw.html')
-        else: 
-            if old_password == check_password: 
-                if check_password_hash(current_user.password, old_password):
-                    query = User.update(password=generate_password_hash(new_password)).where(User.id == current_user.id)
-                    if query.execute():
-                        flash('Password changed!')
-                        return redirect(url_for('home'))
-                    else:
-                        flash('Invalid password input','danger')
-                        return render_template('sessions/edit_pw.html')
-                else:
-                    flash('Incorrect Password','danger')
-                    return render_template('sessions/edit_pw.html')
-            else: 
-                flash('Password and retyped password are different','warning')
-                return render_template('sessions/edit_pw.html')
-    else: 
-        flash('No user logged in','danger')
-        return render_template('sessions/edit_pw.html')
 
 
         

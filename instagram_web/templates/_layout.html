@@ -16,9 +16,9 @@
     {% endassets %}
     
     {% block header %}
-    <h1 style="font-family: 'Permanent Marker';font-size: 30px">NEXTAGRAM</h1>
-    <nav class="nav" style="display:flex; justify-content: flex-end">
-      <a class="nav-link" href="{{url_for('home')}}">Home</a>
+    <nav class="nav">
+      <h1 style="font-family: 'Permanent Marker';font-size: 30px; display: flex; justify-content: flex-start;">NEXTAGRAM</h1>
+      <a class="nav-link" href="{{url_for('home')}}" >Home</a>
       <a class="nav-link active" href="{{url_for('users.signup')}}">Sign Up</a>
       {% if current_user.is_authenticated %} 
       
@@ -41,17 +41,27 @@
           <a> <form action="{{url_for('users.edit_pw')}}">
             <button type="submit" class="nav-link" style="margin: 0;border: none; color: #007BFF; cursor: pointer;background-color: inherit;">Edit Password</button>
             </form></a>
+          <form action="{{url_for('users.edit_profile_pic')}}">
+              <button type="submit" class="nav-link" style="margin: 0;border: none; color: #007BFF; cursor: pointer;background-color: inherit;">Edit PP</button>
+              </form>
         </div>
       </div>
-      
-      <form action="{{url_for('users.upload')}}">
+      <form action="{{url_for('users.show', username=current_user.username)}}">
+        <button type="submit" class="nav-link" style="margin: 0;border: none; color: #007BFF; cursor: pointer;background-color: inherit;">My Profile</button>
+        </form> 
         
+      <form action="{{url_for('users.upload')}}">
+        <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
         <button type="submit" class="nav-link" style="margin: 0;border: none; color: #007BFF; cursor: pointer;background-color: inherit;">Upload</button>
-        </form>
+      </form>
       
+      <form action="{{url_for('users.search')}}">
+      <input type="text" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="basic-addon1" name="search_user">
+      </form>
       {% else %}
-      
+
       <a class="nav-link" href="{{url_for('sessions.login')}}">Login</a>
+      
       {% endif %}
       {#<a class="nav-link disabled" href="#" >Disabled</a>#}
     </nav>

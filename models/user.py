@@ -3,6 +3,8 @@ import peewee as pw
 import re
 from werkzeug.security import generate_password_hash
 from flask_login import UserMixin
+from urllib.parse import urlparse
+from sqlalchemy.ext.hybrid import hybrid_property
 
 class User(BaseModel, UserMixin):
     username = pw.CharField(unique=False)
@@ -28,7 +30,18 @@ class User(BaseModel, UserMixin):
             self.errors.append('Password must have at least 1 special character!')
 
         self.password = generate_password_hash(self.password)
+    
+    @hybrid_property
+    def image_path(self):
+        return urlparse(self.profile_pic).path
 
+    @hybrid_property
+    def image_domain(self):
+        return urlparse(self.profile_pic).scheme +"://" + urlparse(self.profile_pic).netloc
+
+    @hybrid_property
+    def profile_image_url(self):
+        return self.image_domain  + self.image_path
 
         # if User.password == User.retype_password:
         #     self.errors.append('Password and retyped password different')

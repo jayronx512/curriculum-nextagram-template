@@ -1,6 +1,7 @@
 from app import app
 from flask import Blueprint, render_template, request, url_for, flash, redirect
-from models.user import User 
+from models.user import User
+from models.images import Image
 from flask_wtf.csrf import CSRFProtect
 from flask_login import login_user, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -156,12 +157,12 @@ def edit_pw_form():
         flash('No user logged in','danger')
         return render_template('users/edit_pw.html')
 
-@users_blueprint.route('/upload')
-def upload():
-    return render_template('users/upload.html')
+@users_blueprint.route('/edit_profile_pic')
+def edit_profile_pic():
+    return render_template('users/edit_profile_pic.html')
 
-@users_blueprint.route('/upload_form', methods = ["POST"])
-def upload_form():
+@users_blueprint.route('/edit_profile_pic_form', methods = ["POST"])
+def edit_profile_pic_form():
     if "user_file" not in request.files:
         flash('No user_file key in request.files','danger')
         return render_template('users/new.html')
@@ -180,7 +181,7 @@ def upload_form():
             return redirect(url_for('home'))
     
     else: 
-        return redirect(url_for('users.upload'))
+        return redirect(url_for('users.edit_profile_pic'))
 
 
 @users_blueprint.route('/new', methods=['GET'])
@@ -194,13 +195,58 @@ def create():
 
 
 @users_blueprint.route('/<username>', methods=["GET"])
-def show(username):
-    pass
+def show(username): 
+    # username = request.args.get('search_user')
+    user = User.get_or_none(username = username)
+    if current_user.is_authenticated: 
+        if user is not None: 
+            image = user.image
+            if user.username == current_user.username:
+                return render_template('users/profile.html', user = user, image = image)
+            else: 
+                return render_template('users/profile.html', user = user, image = image)
+        
+        else: 
+            flash('This user doesn\'t exist','danger')
+            return render_template('users/user_existence.html', username=username)
+    else: 
+        flash('Please sign in to view profiles', 'danger')
+        return render_template('users/profile.html')
+
+@users_blueprint.route('/search', methods=["GET"])
+def search():
+    search = request.args.get("search_user")
+    return redirect(url_for('users.show', username = search))
+
+@users_blueprint.route('/upload', methods=["GET"])
+def upload():
+    return render_template('users/upload.html')
+
+@users_blueprint.route('/upload_form', methods = ["POST"])
+def upload_form():  
+    if "user_file" not in request.files:
+        flash('No user_file key in request.files','danger')
+        return render_template('users/upload.html')
+    
+    file = request.files["user_file"]
+
+    if file.filename == "":
+        return flash('Please select a file', 'danger')
+
+    if file and allowed_file(file.filename):
+        file.filename = secure_filename(file.filename)
+        # breakpoint()
+        output = upload_file_to_s3(file, S3_BUCKET)
+        new_image = Image(user_id = current_user.id, image_url = str(output))
+        if new_image.save(): 
+            return redirect(url_for('users.upload'))
 
 
-@users_blueprint.route('/', methods=["GET"])
-def index():
-    return "USERS"
+
+
+# @users_blueprint.route('/', methods=["GET"])
+# def index():
+#     return "USERS"
 
 
 # @users_blueprint.route('/<id>/edit', methods=['GET'])
