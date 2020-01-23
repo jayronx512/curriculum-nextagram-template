@@ -2,9 +2,9 @@ import os
 import config
 from flask import Flask, render_template
 from models.base_model import db
-from flask_login import login_manager
+from flask_login import login_manager, LoginManager
 from models.user import User
-from flask_login import LoginManager
+
 
 
 web_dir = os.path.join(os.path.dirname(

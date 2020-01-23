@@ -17,7 +17,7 @@
     
     {% block header %}
     <h1 style="font-family: 'Permanent Marker';font-size: 30px">NEXTAGRAM</h1>
-    <nav class="nav">
+    <nav class="nav" style="display:flex; justify-content: flex-end">
       <a class="nav-link" href="{{url_for('home')}}">Home</a>
       <a class="nav-link active" href="{{url_for('users.signup')}}">Sign Up</a>
       {% if current_user.is_authenticated %} 
@@ -66,26 +66,13 @@
         </div>
       {% endif %}
     {% endwith %}
-
-    {% elif password_error%}
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-      <div class="alert alert-danger" role="alert">
-      {% for message in messages %}
-        {{ message }}
-        <br />
-      {% endfor %}
-      
-      </div>
-    {% endif %}
-    {% endwith %}
     
     {% else %}  
-    {% with messages = get_flashed_messages() %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
-      <div class="alert alert-success" role="alert">
-      {% for message in messages %}
-        {{ message }}
+      <div>
+      {% for category, message in messages %}
+        <div class = "alert alert-{{category}}" role = "alert">{{ message }} </div>
         <br />
       {% endfor %}
       
