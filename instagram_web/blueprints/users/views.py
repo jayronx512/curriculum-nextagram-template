@@ -202,6 +202,7 @@ def show(username):
         if user is not None: 
             image = user.image
             if user.username == current_user.username:
+                # breakpoint()
                 return render_template('users/profile.html', user = user, image = image)
             else: 
                 return render_template('users/profile.html', user = user, image = image)

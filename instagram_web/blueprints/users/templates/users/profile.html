@@ -11,10 +11,10 @@
   Hi {{user.username}}
   Email: {{user.email}}
   {% if user.profile_pic %}
-  <img src = "{{user.profile_pic}}">
+  <img src = "{{user.image_path}}">
   <div> 
     {% for image in image %}
-    <img src = "{{image.image_url}}">
+    <img src = "{{image.image_path}}">
     {% endfor %}
   </div>
   {% else %}

@@ -4,7 +4,8 @@ import re
 from werkzeug.security import generate_password_hash
 from flask_login import UserMixin
 from urllib.parse import urlparse
-from sqlalchemy.ext.hybrid import hybrid_property
+from playhouse.hybrid import hybrid_property
+from config import S3_LOCATION
 
 class User(BaseModel, UserMixin):
     username = pw.CharField(unique=False)
@@ -19,7 +20,6 @@ class User(BaseModel, UserMixin):
         
         if re.search('[A-Za-z0-9._%+-]+@+[A-Za-z]+[.]+[c][o][m]', self.email) is None:
             self.errors.append('Invalid email')
-
         if len(self.password) < 6:
             self.errors.append('Password has to be at least 6 characters!')
         elif re.search('[0-9]', self.password) is None:
@@ -33,15 +33,15 @@ class User(BaseModel, UserMixin):
     
     @hybrid_property
     def image_path(self):
-        return urlparse(self.profile_pic).path
+        return S3_LOCATION + self.profile_pic
 
-    @hybrid_property
-    def image_domain(self):
-        return urlparse(self.profile_pic).scheme +"://" + urlparse(self.profile_pic).netloc
+    # @hybrid_property
+    # def image_domain(self):
+    #     return urlparse(self.profile_pic).scheme +"://" + urlparse(self.profile_pic).netloc
 
-    @hybrid_property
-    def profile_image_url(self):
-        return self.image_domain  + self.image_path
+    # @hybrid_property
+    # def profile_image_url(self):
+    #     return self.image_domain  + self.image_path
 
         # if User.password == User.retype_password:
         #     self.errors.append('Password and retyped password different')
