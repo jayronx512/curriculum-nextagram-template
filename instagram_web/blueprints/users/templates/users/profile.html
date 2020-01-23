@@ -7,25 +7,27 @@
 {% block content %}
 
 {% if current_user.is_authenticated %}
-  <h1>{{user.username}} 's</h1>
-  Hi {{user.username}}
-  Email: {{user.email}}
-  {% if user.profile_pic %}
-  <img src = "{{user.image_path}}">
-  <div> 
-    {% for image in image %}
-    <img src = "{{image.image_path}}">
-    {% endfor %}
-  </div>
-  {% else %}
-  <img src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSo_HDyoYqHSQ5jx4uhfKVv86BKFo6ZBTyRxYAYdu3J8DHb_t6g&s">
-  {% endif %}
-  <br />
-  
+    {% if not current_user.username == user.username and user.security %}
+    <t> PRIVATE USER</t>
+    {% else %}
+    <h1>{{user.username}} 's</h1>
+    Hi {{user.username}}
+    Email: {{user.email}}
+      {% if user.profile_pic %}
+      <img src = "{{user.image_path}}">
+      <div> 
+      {% for image in image %}
+      <img src = "{{image.image_path}}">
+      {% endfor %}
+      </div>
+      {% else %}
+      <img src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSo_HDyoYqHSQ5jx4uhfKVv86BKFo6ZBTyRxYAYdu3J8DHb_t6g&s">
+      {% endif %}
+    {%endif%}
+<br />
 {% else %}
-  <h1>You're currently not logged in!</h1>
-
+<h1>You're currently not logged in!</h1>
 {% endif %}
-  
+
 {#{%endif%}#}
 {% endblock %}

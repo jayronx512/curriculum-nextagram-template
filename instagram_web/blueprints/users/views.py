@@ -242,6 +242,23 @@ def upload_form():
         if new_image.save(): 
             return redirect(url_for('users.upload'))
 
+@users_blueprint.route('/privacy_form', methods=["POST"])
+def privacy_form():
+    user = User.get_by_id(current_user.id)
+    if user.security == False:
+        query = User.update(security = True).where(User.id == current_user.id) 
+        query.execute()
+        flash('Privacy changed to PRIVATE!','primary')
+        return redirect(url_for('home'))
+        
+    else:
+        query = User.update(security = False).where(User.id == current_user.id) 
+        query.execute()
+        flash('Privacy changed to PUBLIC', 'primary')
+        return redirect(url_for('home'))
+
+
+
 
 
 

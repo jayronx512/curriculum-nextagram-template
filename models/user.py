@@ -12,6 +12,7 @@ class User(BaseModel, UserMixin):
     email = pw.CharField(unique=True)
     password = pw.CharField(unique=False)
     profile_pic = pw.TextField(null=True)
+    security = pw.BooleanField(default=False)
 
     def validate(self):
         duplicate_emails = User.get_or_none(User.email == self.email)
