@@ -32,13 +32,13 @@
           Edit
         </button>
         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-          <a><form action="{{url_for('sessions.edit')}}">
+          <a><form action="{{url_for('users.edit')}}">
             <button type="submit" class="nav-link" style="margin: 0;border: none; color: #007BFF; cursor: pointer;background-color: inherit;">Edit Username</button>
             </form> </a>
-          <a> <form action="{{url_for('sessions.edit_email')}}">
+          <a> <form action="{{url_for('users.edit_email')}}">
             <button type="submit" class="nav-link" style="margin: 0;border: none; color: #007BFF; cursor: pointer;background-color: inherit;">Edit Email</button>
             </form></a>
-          <a> <form action="{{url_for('sessions.edit_pw')}}">
+          <a> <form action="{{url_for('users.edit_pw')}}">
             <button type="submit" class="nav-link" style="margin: 0;border: none; color: #007BFF; cursor: pointer;background-color: inherit;">Edit Password</button>
             </form></a>
         </div>

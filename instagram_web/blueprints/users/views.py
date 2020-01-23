@@ -1,11 +1,13 @@
 from app import app
 from flask import Blueprint, render_template, request, url_for, flash, redirect
-from models import user
+from models.user import User 
 from flask_wtf.csrf import CSRFProtect
 from flask_login import login_user, current_user
+from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 from instagram_web.util.helpers import upload_file_to_s3, allowed_file
 from config import S3_BUCKET
+import re
 
 
 csrf = CSRFProtect(app)
@@ -28,7 +30,7 @@ def signup_form():
     if password != retype_password:
         flash('Password and Retyped Password are different','warning')
         return render_template('signup.html')
-    new_user = user.User(username=username, email=email, password=password)
+    new_user = User(username=username, email=email, password=password)
     
     if new_user.save():
         flash('New user created!', 'success')
@@ -39,8 +41,120 @@ def signup_form():
         for err in new_user.errors:
             flash(err, 'danger')
             
-    #     # flash(user.User.errors[0])
+    #     # flash(User.errors[0])
         return render_template('users/new.html', errors=new_user.errors)
+
+@users_blueprint.route("/edit")
+def edit():
+    return render_template('users/edit.html')
+
+@users_blueprint.route("/edit_email")
+def edit_email():
+    return render_template('users/edit_email.html')
+
+@users_blueprint.route("/edit_password")
+def edit_pw():
+    return render_template('users/edit_pw.html')
+
+@users_blueprint.route("/edit_form", methods = ["POST"])
+def edit_form(): 
+    new_username = request.form.get("new_username")
+    check_password = request.form.get("check_password")
+    check_retype_password = request.form.get("check_retype_password")
+    # breakpoint()
+    if current_user.is_authenticated: 
+        if check_password == check_retype_password: 
+            if check_password_hash(current_user.password, check_password):
+                query = User.update(username=new_username).where(User.id == current_user.id)
+                # breakpoint()
+                if query.execute():
+                    flash('Username changed!', 'success')
+                    return redirect(url_for('home'))
+
+                else:
+                    flash('Invalid username input', 'danger')
+                    return render_template('users/edit.html')
+            else:
+                flash('Incorrect Password', 'danger')
+                return render_template('users/edit.html')
+        else: 
+            flash('Password and retyped password are different', 'warning')
+            return render_template('users/edit.html')
+
+    else: 
+        flash('No user logged in', 'danger')
+        return render_template('users/edit.html')
+
+@users_blueprint.route("/edit_email", methods = ["POST"])
+def edit_email_form(): 
+    new_email = request.form.get("new_email")
+    check_password = request.form.get("check_password")
+    check_retype_password = request.form.get("check_retype_password")
+    if current_user.is_authenticated: 
+        if re.search('[A-Za-z0-9._%+-]+@+[A-Za-z]+[.]+[c][o][m]', new_email) is not None:
+            if check_password == check_retype_password: 
+                if check_password_hash(current_user.password, check_password):
+                    query = User.update(email=new_email).where(User.id == current_user.id)
+                    if query.execute():
+                        flash('Email changed!', 'success')
+                        return redirect(url_for('home'))
+                    else:
+                        flash('Invalid email input', 'danger')
+                        return render_template('users/edit_email.html')
+                else:
+                    flash('Incorrect Password', 'danger')
+    
+                    return render_template('users/edit_email.html')
+            else: 
+                flash('Password and retyped password are different', 'warning')
+
+                return render_template('users/edit_email.html')
+        else: 
+            flash('Invalid email', 'danger')
+            return render_template('users/edit_email.html')
+
+    else: 
+        flash('No user logged in', 'error')
+        return render_template('users/edit_email.html')
+
+@users_blueprint.route("/edit_pw", methods = ["POST"])
+def edit_pw_form(): 
+    old_password = request.form.get("old_password")
+    check_password = request.form.get("check_old_password")
+    new_password = request.form.get("new_password")
+    if current_user.is_authenticated: 
+        # if re.search("[A-Za-z0-9$&+,:;=?@#\"\\/|'<>.^*()%!-]", new_password) is None:
+        if len(new_password) < 6:
+            flash('Password has to at least 6 characters', 'warning')
+            return render_template('users/edit_pw.html')
+        elif re.search('[0-9]', new_password) is None:
+            flash('Password must have at least 1 number!', 'warning')
+            return render_template('users/edit_pw.html')
+        elif re.search('[A-Z]', new_password) is None:
+            flash('Password must have at least 1 capital letter!', 'warning')
+            return render_template('users/edit_pw.html')
+        elif re.search("[$&+,:;=?@#\"\\/|'<>.^*()%!-]", new_password) is None:
+            flash('Password must have at least 1 special character!', 'warning')
+            return render_template('users/edit_pw.html')
+        else: 
+            if old_password == check_password: 
+                if check_password_hash(current_user.password, old_password):
+                    query = User.update(password=generate_password_hash(new_password)).where(User.id == current_user.id)
+                    if query.execute():
+                        flash('Password changed!','success')
+                        return redirect(url_for('home'))
+                    else:
+                        flash('Invalid password input','danger')
+                        return render_template('users/edit_pw.html')
+                else:
+                    flash('Incorrect Password','danger')
+                    return render_template('users/edit_pw.html')
+            else: 
+                flash('Password and retyped password are different','warning')
+                return render_template('users/edit_pw.html')
+    else: 
+        flash('No user logged in','danger')
+        return render_template('users/edit_pw.html')
 
 @users_blueprint.route('/upload')
 def upload():
@@ -61,7 +175,7 @@ def upload_form():
         file.filename = secure_filename(file.filename)
         # breakpoint()
         output = upload_file_to_s3(file, S3_BUCKET)
-        query = user.User.update(profile_pic = str(output)).where(user.User.id == current_user.id)
+        query = User.update(profile_pic = str(output)).where(User.id == current_user.id)
         if query.execute(): 
             return redirect(url_for('home'))
     
@@ -89,9 +203,9 @@ def index():
     return "USERS"
 
 
-@users_blueprint.route('/<id>/edit', methods=['GET'])
-def edit(id):
-    pass
+# @users_blueprint.route('/<id>/edit', methods=['GET'])
+# def edit(id):
+#     pass
 
 
 @users_blueprint.route('/<id>', methods=['POST'])
