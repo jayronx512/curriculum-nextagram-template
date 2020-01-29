@@ -62,11 +62,11 @@ img {
 </div>
 <br>
 <div id = "images">
-      <div> 
       {% for image in image %}
+      <div style="display: flex; flex-direction: column;"> 
       <img src = "{{image.image_path}}">
-      {% endfor %}
       </div>
+      {% endfor %}
 </div>
 
     {%endif%}

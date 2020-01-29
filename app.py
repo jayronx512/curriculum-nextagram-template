@@ -4,6 +4,7 @@ from flask import Flask, render_template
 from models.base_model import db
 from flask_login import login_manager, LoginManager
 from models.user import User
+import braintree
 
 
 
@@ -38,7 +39,14 @@ def _db_close(exc):
 def load_user(user_id):
     return User.get_by_id(user_id)
 
-
+gateway = braintree.BraintreeGateway(
+    braintree.Configuration(
+        braintree.Environment.Sandbox,
+        merchant_id= os.environ.get("SB_MERCHANT"),
+        public_key= os.environ.get("SB_PUBLIC"),
+        private_key= os.environ.get("SB_KEY")
+    )
+)
 
 # @app.route("/")
 # def home():
