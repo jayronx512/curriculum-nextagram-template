@@ -1,4 +1,4 @@
-from app import app
+from app import app, oauth
 from flask import Blueprint, render_template, request, url_for, flash, redirect
 from models.user import User
 from flask_wtf.csrf import CSRFProtect
@@ -30,7 +30,6 @@ def login():
 def login_form():
     username_input = request.form.get("username_email")
     password_input = request.form.get("login_password")
-
     accounts = User.select() #get database
     for account in accounts:
         if username_input == account.username:
@@ -54,7 +53,23 @@ def logout():
     logout_user()
     flash('Successfully logout!', 'success')
     return redirect(url_for('home'))
+
+@sessions_blueprint.route("/authorize/")
+def login_google():
+    redirect_uri = url_for('sessions.perform_login_google', _external = True)
+    return oauth.google.authorize_redirect(redirect_uri)
         
+@sessions_blueprint.route("/authorize/google")
+def perform_login_google():
+    token = oauth.google.authorize_access_token()
+    email = oauth.google.get('https://www.googleapis.com/oauth2/v2/userinfo').json()['email']
+
+    user = User.get_or_none(User.email == email)
+    if user is None:
+        flash('Sign up to proceed!', 'danger')
+        return render_template('users/new.html')
+    login_user(user)
+    return redirect(url_for('home'))
 
 
 

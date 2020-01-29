@@ -104,7 +104,7 @@
       .main {
         opacity: 1; 
       }
-      
+
     </style>
 
     {% assets "home_css" %}
@@ -178,12 +178,20 @@
         <button type="submit" class="nav-link grow" id="nav_child7">Upload</button>
         </form>
       </div>
+
+      <div id="nav_child1v2">
+        <form action="{{url_for('sessions.login_google')}}">
+          <button type="submit" class="nav-link grow" id="nav_child1v2">Connect with Google</button>
+        </form>
+      </div>
       
       <div id="nav_child8">
         <form action="{{url_for('users.search')}}">
         <input type="text" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="basic-addon1" name="search_user">
         </form>
       </div>
+
+
       {% else %}
       <div id="nav_child9">
         <a class="nav-link grow" id = "nav_child9" href="{{url_for('sessions.login')}}">Login</a>

@@ -5,7 +5,7 @@ from models.base_model import db
 from flask_login import login_manager, LoginManager
 from models.user import User
 import braintree
-
+from authlib.flask.client import OAuth
 
 
 web_dir = os.path.join(os.path.dirname(
@@ -22,7 +22,7 @@ if os.getenv('FLASK_ENV') == 'production':
 else:
     app.config.from_object("config.DevelopmentConfig")
 
-
+oauth = OAuth()
 @app.before_request
 def before_request():
     db.connect()
@@ -47,6 +47,23 @@ gateway = braintree.BraintreeGateway(
         private_key= os.environ.get("SB_KEY")
     )
 )
+
+oauth.register('google',
+    client_id= config.GOOGLE_CLIENT_ID,
+    client_secret= config.GOOGLE_CLIENT_SECRET,
+    access_token_url='https://accounts.google.com/o/oauth2/token',
+    access_token_params=None,
+    refresh_token_url=None,
+    authorize_url='https://accounts.google.com/o/oauth2/auth',
+    api_base_url='https://www.googleapis.com/oauth2/v1/',
+    client_kwargs={
+        'scope': 'https://www.googleapis.com/auth/userinfo.email',
+        'token_endpoint_auth_method': 'client_secret_basic',
+        'token_placement': 'header',
+        'prompt': 'consent'
+    }
+)
+
 
 # @app.route("/")
 # def home():
