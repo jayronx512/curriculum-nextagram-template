@@ -5,7 +5,7 @@ from models.images import Image
 from playhouse.hybrid import hybrid_property
 
 class Payment(BaseModel):
-    user = pw.ForeignKeyField(User, backref = 'donation')
+    donator = pw.ForeignKeyField(User, backref = 'donation')
     image = pw.ForeignKeyField(Image, backref = 'donation')
     payment = pw.IntegerField(default = 5)
     message = pw.TextField(null=True)

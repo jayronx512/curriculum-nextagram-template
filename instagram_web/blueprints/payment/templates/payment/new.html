@@ -1,20 +1,29 @@
 {% extends "_layout.html" %}
 {% block content %}
-<h1>HELLO</h1>
-<form id = "form" action = "{{url_for('payment.create_purchase')}}" method = "POST">
-    <h2>Amount</h2>
-    <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
-    <input type="text" name="dollar" />.
-    <input type="hidden" name="nonce" id="nonce"/>
-</form>
+<h1>Transaction Processing...</h1>
 
-<button id="submit-button">Request payment method</button>
+<div id="dropin-container"></div>
+<br>
+<form id = "form" action = "{{url_for('payment.create_purchase', img_id = img_id)}}" method = "POST" onsubmit="return false">
+    <h3>Donation details</h3>
+    <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
+    <div>
+        <input type="text" class="form-control" placeholder="Amount" name="dollar" style="max-width:300px;">
+        <t>*Integers only</t>
+        <br />
+        <br />
+        <textarea name="message" placeholder="Message..." class="form-control" style="height: 100px;"></textarea>
+    </div>
+    <input type="hidden" name="nonce" id="nonce"/>
+    <br>
+    <button type="submit" id="submit-button">Donate</button>
+</form>
 <head>
     <meta charset="utf-8">
     <script src="https://js.braintreegateway.com/web/dropin/1.22.0/js/dropin.min.js"></script>
   </head>
   <body>
-    <div id="dropin-container"></div>
+    
 
     <script>
       var button = document.querySelector('#submit-button');
@@ -32,6 +41,8 @@
         });
       });
     </script>
+    
   </body>
+  
 {% endblock %}
 

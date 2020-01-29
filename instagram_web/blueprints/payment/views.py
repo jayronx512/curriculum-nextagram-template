@@ -1,11 +1,13 @@
 from app import app, gateway
 from flask import Blueprint, render_template, request, url_for, flash, redirect
 from models.payment import Payment
+from models.images import Image
+from models.user import User
 from flask_wtf.csrf import CSRFProtect
-from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, logout_user, current_user
-import re
-import boto3, botocore
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
+import os
 
 
 
@@ -19,15 +21,16 @@ payment_blueprint = Blueprint('payment',
 
 
 
-@payment_blueprint.route("/")
-def payment():
+@payment_blueprint.route("/<img_id>", methods = ["GET"])
+def payment(img_id):
     token = gateway.client_token.generate()
-    return render_template('payment/new.html', token = token)
+    return render_template('payment/new.html', token = token, img_id = img_id)
 
-@payment_blueprint.route("/checkout", methods = ["POST"])
-def create_purchase(): 
+@payment_blueprint.route("/<img_id>", methods = ["POST"])
+def create_purchase(img_id): 
     nonce = request.form.get("nonce")
     amount = request.form.get("dollar")
+    message = request.form.get("message")
     result = gateway.transaction.sale({
         "amount": amount,
         "payment_method_nonce": nonce,
@@ -35,12 +38,27 @@ def create_purchase():
             "submit_for_settlement": True
         }
     })
-
     if result.is_success:
-        payment = Payment(payment = amount, user_id = current_user.id, image_id = "1", message = "HELLO")
-
+        payment = Payment(payment = amount, donator_id = current_user.id, image_id = img_id, message = message)
         if payment.save():
-            return redirect(url_for('payment.payment'))
+            image = Image.get_or_none(id = img_id)
+            image_owner = User.get_or_none(id = image.user_id)
+            message = Mail(
+            from_email=current_user.email,
+            to_emails= image_owner.email,
+            subject= f"Donation from {current_user.username}",
+            html_content=f'<strong>A donation of RM{amount} is made on your image{img_id} from {current_user.username}</strong>')
+
+            try:
+                sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+                response = sg.send(message)
+                print(response.status_code)
+                print(response.body)
+                print(response.headers)
+            except Exception as e:
+                print(str(e))
+
+            return redirect(url_for('home'))
         else:
             return render_template('payment/payment.html')
 
