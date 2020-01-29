@@ -1,17 +1,47 @@
 {% extends "_layout.html" %}
 {% block content %}
-<body>
+<style> 
+  #parent{
+    display: flex; 
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    font-family: Patrick Hand; 
+  }
 
-    <h1>Upload Your Files Bro</h1>
-    <form action="{{url_for('users.edit_profile_pic_form')}}" method="POST" enctype="multipart/form-data">
+  #form {
+    padding: 50px 50px 100px 50px;
+    border-style: solid;
+    width: 400px;
+    border-radius: 50px;
+    color: #b20a2c
+  }
+
+  .btn {
+    background-color: #b20a2c;
+    color: #fffbd5;
+    border: none;
+  }
+
+  .btn:hover {
+    font-weight:bold;
+    background-color: rgb(184, 38, 38);
+  }
+  
+</style>
+<br>
+<div id = "parent">
+    <form action="{{url_for('users.edit_profile_pic_form')}}" method="POST" enctype="multipart/form-data" id = "form">
+        <h1>Upload Your Picture</h1>
         <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
         <label for="user_file">Upload Your File</label>
         <br></br>
         <input type="file" name="user_file">
         <br></br>
-        <button type="submit">Upload</button>
+        <button type="submit" class="btn">Upload</button>
 
     </form>
 
-</body>
+</div>
 {% endblock %}

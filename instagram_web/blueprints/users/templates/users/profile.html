@@ -5,24 +5,70 @@
 {% endblock %}
 
 {% block content %}
+<style>
+#profile_pic {
+  display: inline-block;
+  width: 200px;
+  height: 200px; 
+  border-radius: 50%;
+  overflow: hidden;
+}
 
+#profile_id {
+  display: flex;
+  justify-content: space-around;
+  text-align: center;
+  font-family: Patrick Hand;
+}
+
+#images {
+  
+  display: flex;
+  justify-content: flex-start;
+  text-align: center;
+  flex-wrap: wrap;
+}
+
+img {
+  border-style: solid;
+  border-width: thin;
+  width:200px;
+  height: 200px;
+}
+
+#detail_child {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+</style>
+<div id = "profile_id">
 {% if current_user.is_authenticated %}
-    {% if not current_user.username == user.username and user.security %}
-    <t> PRIVATE USER</t>
+    <div id="profile_img">
+    {% if user.profile_pic %}
+    <img id = "profile_pic" src = "{{user.image_path}}">
     {% else %}
-    <h1>{{user.username}} 's</h1>
+    <img id = "profile_pic" src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSo_HDyoYqHSQ5jx4uhfKVv86BKFo6ZBTyRxYAYdu3J8DHb_t6g&s">
+    {% endif %}
+    </div>
+
+    <div id="detail_child">
+    {% if not current_user.username == user.username and user.security %}
+    <t> This user is private! </t>
+    {% else %}
+    <h1>{{user.username}}'s</h1>
     Hi {{user.username}}
-    Email: {{user.email}}
-      {% if user.profile_pic %}
-      <img src = "{{user.image_path}}">
+    </div>
+</div>
+<br>
+<div id = "images">
       <div> 
       {% for image in image %}
       <img src = "{{image.image_path}}">
       {% endfor %}
       </div>
-      {% else %}
-      <img src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSo_HDyoYqHSQ5jx4uhfKVv86BKFo6ZBTyRxYAYdu3J8DHb_t6g&s">
-      {% endif %}
+</div>
+
     {%endif%}
 <br />
 {% else %}

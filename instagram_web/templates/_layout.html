@@ -7,22 +7,38 @@
 
     <link rel="shortcut icon" href="{{ url_for('static', filename='image/favicon.ico') }}">
     <link href='https://fonts.googleapis.com/css?family=Permanent Marker' rel='stylesheet'>
-
-    <style>
+    <link href="https://fonts.googleapis.com/css?family=Patrick+Hand|Sigmar+One&display=swap" rel="stylesheet">
+   
+   <style>
       #nav_parent {
         display: flex; 
         width: 100vw; 
         justify-content: space-between;
         background-color:#b20a2c;
+        font-family: Patrick Hand; 
+        color: #fffbd5;
       }
 
       #nav_content {
         display: flex;
-        justify-content: space-between
+        justify-content: space-between;
+        color: #fffbd5;
       }
 
       #nav_title { 
         color: #fffbd5;  
+      }
+
+      #nav_child1 {
+        color: #fffbd5;
+      }
+
+      #nav_child2 {
+        color: #fffbd5;
+      }
+
+      #nav_child3 {
+        color: #fffbd5;
       }
 
       #nav_child4 {
@@ -36,16 +52,59 @@
       #nav_child5 {
         margin: 0;
         border: none;
-        color: black; 
+        color:  #fffbd5; 
         cursor: pointer;
         background-color: inherit;
       }
 
+      #nav_child6 {
+        margin: 0;
+        border: none; 
+        color: #fffbd5; 
+        cursor: pointer;
+        background-color: inherit;
+      }
+
+      #nav_child7 {
+        margin: 0;
+        border: none; 
+        color: #fffbd5; 
+        cursor: pointer;
+        background-color: inherit;
+      }
+
+      #nav_child9 {
+        color: #fffbd5;  
+      }
+
       #dropdownMenuButton {
-        color: black;
+        color:  #fffbd5;
         background-color: inherit;
         border: none; 
       }
+
+      #background_image {
+        height: 800px;
+        width: inherit;
+        background-image: url('https://www.elsetge.cat/myimg/f/48-486302_camera-hd-wallpapers-backgrounds-wallpaper-cute-camera-wallpaper.jpg');
+        background-size: cover;
+        opacity: 0.85;
+      }
+      
+      #dropdownBackground {
+        background-color: #b20a2c;
+      }
+
+      .grow:hover {
+        font-weight:bold;
+        font-size: 20px;
+        background-color: rgb(184, 38, 38);
+        border-radius: 20px;
+      }
+      .main {
+        opacity: 1; 
+      }
+      
     </style>
 
     {% assets "home_css" %}
@@ -60,48 +119,48 @@
     <div id = "nav_parent">
       <div id = "nav_title">
         <div id = "nav_child1"> 
-          <h1>NEXTAGRAM</h1>
+          <h1 style="font-family: Sigmar One;">NEXTAGRAM</h1>
         </div>
       </div>
     <nav class="nav">
     <div id = "nav_content">
       <div id = "nav_child2">
-        <a class="nav-link" href="{{url_for('home')}}" >Home</a>
+        <a class="nav-link grow" id="nav_child2" href="{{url_for('home')}}" >Home</a>
       </div>
       
       <div id = "nav_child3">
-      <a class="nav-link active" href="{{url_for('users.signup')}}">Sign Up</a>
+      <a class="nav-link active grow" id="nav_child2" href="{{url_for('users.signup')}}">Sign Up</a>
       </div>
 
       {% if current_user.is_authenticated %} 
       <div id = "nav_child4">
         <form action="{{url_for('sessions.logout')}}" method = "POST">
         <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
-        <button type="submit" class="nav-link" id = "nav_child4">Logout</button>
+        <button type="submit" class="nav-link grow" id = "nav_child4">Logout</button>
         </form>
       </div>
 
       <div id = "nav_child5">
         <div class="dropdown">
-          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <button class="btn btn-secondary dropdown-toggle grow" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Edit
           </button>
-          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id=dropdownBackground>
             <a><form action="{{url_for('users.edit')}}">
-            <button type="submit" class="nav-link" id = "nav_child5"  >Edit Username</button>
+            <button type="submit" class="nav-link grow" id = "nav_child5"  >Edit Username</button>
             </form> </a>
             <a> <form action="{{url_for('users.edit_email')}}">
-            <button type="submit" class="nav-link" id = "nav_child5">Edit Email</button>
+            <button type="submit" class="nav-link grow" id = "nav_child5">Edit Email</button>
             </form></a>
             <a> <form action="{{url_for('users.edit_pw')}}">
-            <button type="submit" class="nav-link" id = "nav_child5">Edit Password</button>
+            <button type="submit" class="nav-link grow" id = "nav_child5">Edit Password</button>
             </form></a>
             <form action="{{url_for('users.edit_profile_pic')}}">
-            <button type="submit" class="nav-link" id = "nav_child5" >Edit PP</button>
+            <button type="submit" class="nav-link grow" id = "nav_child5" >Edit PP</button>
             </form>
             <form action="{{url_for('users.privacy_form')}}", method = "POST">
             <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
-            <button type="submit" class="nav-link" name="privacy" id = "nav_child5">Change Privacy</button>
+            <button type="submit" class="nav-link grow" name="privacy" id = "nav_child5">Change Privacy</button>
             </form>
           </div>
         </div>
@@ -109,14 +168,14 @@
 
       <div id="nav_child6">
         <form action="{{url_for('users.show', username=current_user.username)}}">
-        <button type="submit" class="nav-link" style="margin: 0;border: none; color: #007BFF; cursor: pointer;background-color: inherit;">My Profile</button>
+        <button type="submit" class="nav-link grow" id="nav_child6">My Profile</button>
         </form> 
       </div>
       
       <div id="nav_child7">
         <form action="{{url_for('users.upload')}}">
         <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
-        <button type="submit" class="nav-link" style="margin: 0;border: none; color: #007BFF; cursor: pointer;background-color: inherit;">Upload</button>
+        <button type="submit" class="nav-link grow" id="nav_child7">Upload</button>
         </form>
       </div>
       
@@ -127,15 +186,15 @@
       </div>
       {% else %}
       <div id="nav_child9">
-        <a class="nav-link" href="{{url_for('sessions.login')}}">Login</a>
+        <a class="nav-link grow" id = "nav_child9" href="{{url_for('sessions.login')}}">Login</a>
       </div>
      </div> 
     {% endif %}
     {#<a class="nav-link disabled" href="#" >Disabled</a>#}
     </nav>
   </div>
-    
-    
+
+  <div id="flash">
     {% endblock %}
     {%if errors%}
     {% with messages = get_flashed_messages() %}
@@ -162,6 +221,7 @@
     {% endif %}
     {% endwith %}
     {% endif %}
+  </div>
   
   <title>
     {% block title %}
@@ -169,10 +229,12 @@
   </title>
 
   <body>
+    <div id = "background_image">
     {% block content %}
     {% endblock %}
     <footer>
       Made with &hearts; at <a target="_blank" href="https://www.nextacademy.com/?utm_source=github&utm_medium=student-challenge&utm_campaign=flask-nextagram">NEXT Academy</a>
     </footer>
+    </div> 
   </body>
 </html>

@@ -1,24 +1,81 @@
 {% extends "_layout.html" %}
 {% block content %}
-<form action="{{url_for('sessions.login_form')}}" method="POST">
+<style>
+  #basic-addon1 {
+    width: 40px;
+  }
+  
+  .form-control {
+    max-width: 300px;
+  }
+
+  #login-page {
+    display: flex; 
+    flex-direction: row;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    font-family: Patrick Hand;
+  }
+
+  #child1 {
+    text-align:center;
+  }
+
+  #form {
+    padding: 50px 50px 100px 50px;
+    border-style: solid;
+    width: 400px;
+    border-radius: 50px;
+    color: #b20a2c
+  }
+
+  .btn {
+    background-color: #b20a2c;
+    color: #fffbd5;
+    border: none;
+  }
+
+  .btn:hover {
+    font-weight:bold;
+    background-color: rgb(184, 38, 38);
+    border-radius: 20px;
+  }
+
+
+</style>
+<br>
+<div id="login-page">
+  
+  <form action="{{url_for('sessions.login_form')}}" method="POST" id="form">
+  
+    
+
+    <div id = "child1">
     <h1>LOGIN</h1>
     <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
     <div class="input-group mb-3">
         <div class="input-group-prepend">
           <span class="input-group-text" id="basic-addon1">id</span>
         </div>
-        <input type="text" class="form-control" placeholder="Username/Email" aria-label="Username/Email" aria-describedby="basic-addon1" name="username_email">
+        <input id = "login" type="text" class="form-control" placeholder="Username/Email" aria-label="Username/Email" aria-describedby="basic-addon1" name="username_email">
     </div>
-    
+  </div>
+
+  <div id = "child2">
     <div class="input-group mb-3">
         <div class="input-group-prepend">
           <span class="input-group-text" id="basic-addon1">#</span>
         </div>
         <input type="password" class="form-control" placeholder="Password" aria-label="Password" aria-describedby="basic-addon1" name="login_password">
     </div>
+  </div>
 
+  <div id = "child3">
     <button type="submit" class="btn btn-primary" style="border-radius: 15px;">Submit</button>
-</form>
+  </div>
+  </form>
+</div>
 
 {% endblock %}
 

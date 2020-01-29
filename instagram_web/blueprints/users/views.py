@@ -19,7 +19,7 @@ users_blueprint = Blueprint('users',
 
 @users_blueprint.route("/signup")
 def signup():
-    return render_template('signup.html')
+    return render_template('users/new.html')
 
 @users_blueprint.route("/signup_form", methods=["POST"])
 def signup_form():
@@ -30,7 +30,7 @@ def signup_form():
     # hashed_password = generate_password_hash(password)
     if password != retype_password:
         flash('Password and Retyped Password are different','warning')
-        return render_template('signup.html')
+        return render_template('users/new.html')
     new_user = User(username=username, email=email, password=password)
     
     if new_user.save():
@@ -96,12 +96,15 @@ def edit_email_form():
             if check_password == check_retype_password: 
                 if check_password_hash(current_user.password, check_password):
                     query = User.update(email=new_email).where(User.id == current_user.id)
-                    if query.execute():
+                    duplicate_emails = User.get_or_none(email = new_email)
+                    if duplicate_emails:
+                        flash('Email has already been used!', 'danger')
+                        return render_template('users/edit_email.html')
+                    else:
+                        query.execute()
                         flash('Email changed!', 'success')
                         return redirect(url_for('home'))
-                    else:
-                        flash('Invalid email input', 'danger')
-                        return render_template('users/edit_email.html')
+                        
                 else:
                     flash('Incorrect Password', 'danger')
     
@@ -240,6 +243,7 @@ def upload_form():
         output = upload_file_to_s3(file, S3_BUCKET)
         new_image = Image(user_id = current_user.id, image_url = str(output))
         if new_image.save(): 
+            # breakpoint()
             return redirect(url_for('users.upload'))
 
 @users_blueprint.route('/privacy_form', methods=["POST"])
