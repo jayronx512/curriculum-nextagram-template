@@ -60,7 +60,7 @@ def create_purchase(img_id):
 
             return redirect(url_for('home'))
         else:
-            return render_template('payment/payment.html')
+            return render_template('payment/new.html')
 
     else: 
         flash('Transaction failed', 'danger')

@@ -287,27 +287,6 @@ def privacy_form():
 @users_blueprint.route('/follow/<username>', methods = ["POST"])
 def follow(username):
     user = User.get_or_none(username = username)
-    if user is not None: 
-        followship = Follow(followed_id = user.id, follower_id = current_user.id)
-        if followship.save():
-            flash(f"You have successfully followed {user.username}!", 'success')
-            return redirect(url_for('users.show', username = username))
-        else: 
-            flash("Follow failed!", 'danger')
-            return render_template("users/profile.html")
-
-@users_blueprint.route('/unfollow/<username>', methods = ["POST"])
-def unfollow(username):
-    user = User.get_or_none(username = username)
-    if user is not None:
-        unfollow = Follow.get_or_none(followed_id = user.id)
-        if unfollow.delete_instance():
-            flash(f"Successfully unfollowed {user.username}!", 'success')
-            return redirect(url_for('users.show', username = username))
-
-@users_blueprint.route('/follow/private/<username>', methods = ["POST"])
-def follow_private(username):
-    user = User.get_or_none(username = username)
     pending = False
     if user is not None: 
         if user.security == False:
@@ -340,8 +319,19 @@ def follow_private(username):
             # return redirect(url_for('users.show', username = user.username, pending = pending))
             return render_template('users/profile.html', user=user, pending = pending)
     else: 
-        flash('LMAO', 'danger')
+        flash('User not exist!', 'danger')
         return render_template('users/new.html')
+
+@users_blueprint.route('/unfollow/<username>', methods = ["POST"])
+def unfollow(username):
+    user = User.get_or_none(username = username)
+    if user is not None:
+        unfollow = Follow.get_or_none(followed_id = user.id)
+        if unfollow.delete_instance():
+            flash(f"Successfully unfollowed {user.username}!", 'success')
+            return redirect(url_for('users.show', username = username))
+
+
 
 @users_blueprint.route(f'/follow/public/<username>/{timestamp}', methods = ["GET"])
 def follow_public(username):
