@@ -41,6 +41,19 @@ img {
   flex-direction: column;
   justify-content: center;
 }
+
+.btn {
+        color:  #fffbd5;
+        background-color: #b20a2c;
+        border: none; 
+      }
+
+  .btn:hover {
+    font-weight:bold;
+    font-size: 20px;
+    background-color: rgb(184, 38, 38);
+    border-radius: 20px;
+  }
 </style>
 <div id = "profile_id">
 {% if current_user.is_authenticated %}
@@ -55,9 +68,33 @@ img {
     <div id="detail_child">
     {% if not current_user.username == user.username and user.security %}
     <t> This user is private! </t>
+    {% if is_current_user_following %}
+    <form action="{{url_for('users.unfollow', username = user.username)}}" method = "POST">
+      <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
+    <button type="submit" class="btn btn-primary" style="border-radius: 15px;">Unfollow</button>
+  </form>
+    {% else %}
+    <form action="{{url_for('users.follow_private', username = user.username)}}" method = "POST">
+      <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
+      <button type="submit" class="btn btn-primary" style="border-radius: 15px;">Follow</button>
+    </form>
+    {% endif %}
     {% else %}
     <h1>{{user.username}}'s</h1>
     Hi {{user.username}}
+    {% if not current_user.username == user.username %}
+    {% if is_current_user_following %}
+    <form action="{{url_for('users.unfollow', username = user.username)}}" method = "POST">
+      <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
+    <button type="submit" class="btn btn-primary" style="border-radius: 15px;">Unfollow</button>
+  </form>
+    {% else %}
+    <form action="{{url_for('users.follow', username = user.username)}}" method = "POST">
+      <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
+      <button type="submit" class="btn btn-primary" style="border-radius: 15px;">Follow</button>
+    </form>
+    {% endif %}
+    {% endif %}
     </div>
 </div>
 <br>
@@ -65,7 +102,8 @@ img {
       {% for image in image %}
       <div style="display: flex; flex-direction: column;"> 
       <img src = "{{image.image_path}}">
-      <form action="{{url_for('payment.payment', img_id = image.id)}}">
+      <form action="{{url_for('payment.payment', img_id = image.id)}}" method = "POST">
+        <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
       <button type="submit" class="btn btn-primary" style="border-radius: 15px;">Donate</button>
       </form>
       </div>

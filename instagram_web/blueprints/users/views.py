@@ -2,13 +2,17 @@ from app import app
 from flask import Blueprint, render_template, request, url_for, flash, redirect
 from models.user import User
 from models.images import Image
+from models.follow import Follow
 from flask_wtf.csrf import CSRFProtect
 from flask_login import login_user, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 from instagram_web.util.helpers import upload_file_to_s3, allowed_file
 from config import S3_BUCKET
-import re
+import re, os
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
+
 
 
 csrf = CSRFProtect(app)
@@ -204,11 +208,28 @@ def show(username):
     if current_user.is_authenticated: 
         if user is not None: 
             image = user.image
+            user_follower = user.follower 
+            user_followed = user.followed
+            
+
             if user.username == current_user.username:
                 # breakpoint()
-                return render_template('users/profile.html', user = user, image = image)
+                return render_template('users/profile.html', user = user, image = image, user_follower = user_follower, user_followed = user_followed)
             else: 
-                return render_template('users/profile.html', user = user, image = image)
+                # for i in user_follower:
+                #     if i.follower_id == current_user.id:
+                #         follower = User.get_or_none(username = current_user.username)
+                #         breakpoint()
+                #         return follower
+                #     else:
+                #         breakpoint()
+                is_current_user_following = ""                
+                if Follow.get_or_none(Follow.follower == current_user.id, Follow.followed == user.id):
+                    is_current_user_following = True
+                else:
+                    is_current_user_following = False
+    
+            return render_template('users/profile.html', user = user, image = image, user_follower = user_follower, user_followed = user_followed, is_current_user_following = is_current_user_following)
         
         else: 
             flash('This user doesn\'t exist','danger')
@@ -260,6 +281,78 @@ def privacy_form():
         query.execute()
         flash('Privacy changed to PUBLIC', 'primary')
         return redirect(url_for('home'))
+
+@users_blueprint.route('/follow/<username>', methods = ["POST"])
+def follow(username):
+    user = User.get_or_none(username = username)
+    if user is not None: 
+        followship = Follow(followed_id = user.id, follower_id = current_user.id)
+        if followship.save():
+            flash(f"You have successfully followed {user.username}!", 'success')
+            return redirect(url_for('users.show', username = username))
+        else: 
+            flash("Follow failed!", 'danger')
+            return render_template("users/profile.html")
+
+@users_blueprint.route('/unfollow/<username>', methods = ["POST"])
+def unfollow(username):
+    user = User.get_or_none(username = username)
+    if user is not None:
+        unfollow = Follow.get_or_none(followed_id = user.id)
+        if unfollow.delete_instance():
+            flash(f"Successfully unfollowed {user.username}!", 'success')
+            return redirect(url_for('users.show', username = username))
+
+@users_blueprint.route('/follow/private/<username>', methods = ["POST"])
+def follow_private(username):
+    user = User.get_or_none(username = username)
+    if user is not None: 
+        if user.security == False:
+            followship = Follow(followed_id = user.id, follower_id = current_user.id)
+            if followship.save():
+                flash(f"You have successfully followed {user.username}!", 'success')
+                return redirect(url_for('users.show', username = username))
+            else: 
+                flash("Follow failed!", 'danger')
+                return render_template("users/profile.html")
+        
+        else: 
+            message = Mail(
+            from_email= 'jj@gmail.com',
+            to_emails= user.email,
+            subject= f"Follow request from {current_user.username}",
+            html_content= render_template("users/follow_request.html", user=user))
+
+            try:
+                sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+                response = sg.send(message)
+                print(response.status_code)
+                print(response.body)
+                print(response.headers)
+            except Exception as e:
+                print(str(e))
+
+            flash(f"Follow request sent to {user.username}!", 'primary')
+            return redirect(url_for('users.show', username = user.username))
+    else: 
+        flash('LMAO', 'danger')
+        return render_template('users/new.html')
+
+@users_blueprint.route('/follow/public/<username>', methods = ["GET"])
+def follow_public(username):
+    user = User.get_or_none(username = username)
+    if user is not None: 
+        followship = Follow(followed_id = user.id, follower_id = current_user.id)
+        if followship.save():
+            flash(f"You have successfully followed {user.username}!", 'success')
+            return redirect(url_for('users.show', username = username))
+        else: 
+            flash("Follow failed!", 'danger')
+            return render_template("users/profile.html")
+   
+    
+
+
 
 
 

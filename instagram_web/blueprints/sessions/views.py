@@ -63,7 +63,6 @@ def login_google():
 def perform_login_google():
     token = oauth.google.authorize_access_token()
     email = oauth.google.get('https://www.googleapis.com/oauth2/v2/userinfo').json()['email']
-
     user = User.get_or_none(User.email == email)
     if user is None:
         flash('Sign up to proceed!', 'danger')

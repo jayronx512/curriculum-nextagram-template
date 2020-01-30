@@ -1,0 +1,9 @@
+<html>
+<h1> Follow Request!</h1>
+
+<a href = "http://localhost:5000/users/follow/public/{{user.username}}">Accept</a><a href = "http://google.com">Ignore</a>
+<form action="{{url_for('users.follow', username = user.username)}}" method = "POST">
+    <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
+  <button type="submit" class="btn btn-primary" style="border-radius: 15px;">Accept</button>
+</form>
+</html>
