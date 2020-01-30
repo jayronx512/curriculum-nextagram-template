@@ -66,9 +66,11 @@ img {
     </div>
 
     <div id="detail_child">
-    {% if not current_user.username == user.username and user.security %}
+    {% if not is_current_user_following and user.security %}
     <t> This user is private! </t>
-    {% if is_current_user_following %}
+    {% if pending %}
+    <button type="disabled" class="btn btn-primary" style="border-radius: 15px;">Pending</button>
+    {% elif is_current_user_following %}
     <form action="{{url_for('users.unfollow', username = user.username)}}" method = "POST">
       <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
     <button type="submit" class="btn btn-primary" style="border-radius: 15px;">Unfollow</button>
@@ -82,8 +84,8 @@ img {
     {% else %}
     <h1>{{user.username}}'s</h1>
     Hi {{user.username}}
-    {% if not current_user.username == user.username %}
-    {% if is_current_user_following %}
+    {% if current_user.username == user.username %}
+    {% elif is_current_user_following %}
     <form action="{{url_for('users.unfollow', username = user.username)}}" method = "POST">
       <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
     <button type="submit" class="btn btn-primary" style="border-radius: 15px;">Unfollow</button>
@@ -93,7 +95,6 @@ img {
       <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
       <button type="submit" class="btn btn-primary" style="border-radius: 15px;">Follow</button>
     </form>
-    {% endif %}
     {% endif %}
     </div>
 </div>

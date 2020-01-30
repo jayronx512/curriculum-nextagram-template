@@ -12,8 +12,10 @@ from config import S3_BUCKET
 import re, os
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
+from datetime import datetime
 
-
+now = datetime.now()
+timestamp = datetime.timestamp(now)
 
 csrf = CSRFProtect(app)
 
@@ -306,6 +308,7 @@ def unfollow(username):
 @users_blueprint.route('/follow/private/<username>', methods = ["POST"])
 def follow_private(username):
     user = User.get_or_none(username = username)
+    pending = False
     if user is not None: 
         if user.security == False:
             followship = Follow(followed_id = user.id, follower_id = current_user.id)
@@ -315,13 +318,13 @@ def follow_private(username):
             else: 
                 flash("Follow failed!", 'danger')
                 return render_template("users/profile.html")
-        
+
         else: 
             message = Mail(
             from_email= 'jj@gmail.com',
             to_emails= user.email,
             subject= f"Follow request from {current_user.username}",
-            html_content= render_template("users/follow_request.html", user=user))
+            html_content= render_template("users/follow_request.html", user=user, timestamp = timestamp))
 
             try:
                 sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
@@ -333,12 +336,14 @@ def follow_private(username):
                 print(str(e))
 
             flash(f"Follow request sent to {user.username}!", 'primary')
-            return redirect(url_for('users.show', username = user.username))
+            pending = True
+            # return redirect(url_for('users.show', username = user.username, pending = pending))
+            return render_template('users/profile.html', user=user, pending = pending)
     else: 
         flash('LMAO', 'danger')
         return render_template('users/new.html')
 
-@users_blueprint.route('/follow/public/<username>', methods = ["GET"])
+@users_blueprint.route(f'/follow/public/<username>/{timestamp}', methods = ["GET"])
 def follow_public(username):
     user = User.get_or_none(username = username)
     if user is not None: 
