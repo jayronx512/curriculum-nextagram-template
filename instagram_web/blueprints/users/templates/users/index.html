@@ -1,37 +1,70 @@
 {% extends "_layout.html" %}
 {% block content %}
 <style> 
-#row {
-  display: flex;
-  flex-direction: row;
-  margin-left: 500px;
-  margin-right: 500px;
-  justify-content: space-around;
-  text-align: center;
-  font-family: Patrick Hand;
+
+.btn {
+    color:  #fffbd5;
+    background-color: #b20a2c;
+    border: none; 
+    border-radius: 15px;
+    width: 100px;
+    height:40px;
 }
 
+  .btn:hover {
+    font-weight:bold;
+    font-size: 20px;
+    background-color: rgb(184, 38, 38);
+    border-radius: 20px;
+  }
+
+  table {
+      display: table;
+      table-layout: fixed;
+      border-collapse: collapse;
+      width: 100%;
+      border-spacing: 2px;
+      font-family: Patrick Hand;
+      text-align: center;
+  }
+
+
+
+
 </style>
-<div>
+     <div id = "row"></div>
+        <table>
+        <tr>
+            <th>Username</th>
+            <th></th>
+        </tr>
         {% for profile in following_arr %}
-        <div id = "row">
-            {{profile.profile.username}}
-            {% if profile.status %}
-                <form action="{{url_for('users.unfollow', username = profile.profile.username)}}" method = "POST">
-                    <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
-                    <button type="submit" class="btn btn-primary" style="border-radius: 15px;">Unfollow</button>
-                </form>
-            {% else %}
-                <form action="{{url_for('users.follow', username = profile.profile.username)}}" method = "POST">
-                    <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
-                    <button type="submit" class="btn btn-primary" style="border-radius: 15px;">Follow</button>
-                </form>
-            {% endif %}
-            <form action="{{url_for('users.show', username = profile.profile.username)}}">
-                <button type="submit" class="btn btn-primary" style="border-radius: 15px;">Visit</button>
-            </form>
-        </div>
-        {% endfor %}
+                <tr>   
+                    <td>{{profile.profile.username}}</td>
+                 
+                    <td style='white-space: nowrap;'>
+                    {% if profile.status %}
+                        <form style = "display: inline-block; width: 150px;" action="{{url_for('users.unfollow', username = profile.profile.username)}}" method = "POST">
+                            <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
+                            <button type="submit" class="btn btn-primary" style = "background-color: darkred;">Unfollow</button>
+                        </form>
+                    {% else %}
+                        <form style = "display: inline-block; width: 150px;" action="{{url_for('users.follow', username = profile.profile.username)}}" method = "POST">
+                            <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
+                            <button type="submit" class="btn btn-primary" >Follow</button>
+                        </form>
+                    
+                    {% endif %}
+                  
+                        <form style = "display: inline-block; width: 150px;" action="{{url_for('users.show', username = profile.profile.username)}}">
+                            <button type="submit" class="btn btn-primary" >Visit</button>
+                        </form>
+                    </td>
+                </tr>
+        {% endfor %}     
+        </table>
+    </div>
+        
 
 
 {#% for user in users %}
