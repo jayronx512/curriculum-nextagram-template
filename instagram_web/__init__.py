@@ -5,8 +5,9 @@ from instagram_web.blueprints.sessions.views import sessions_blueprint
 from instagram_web.blueprints.payment.views import payment_blueprint
 from flask_assets import Environment, Bundle
 from .util.assets import bundles
-from models import user
+from models.user import User
 from flask_wtf.csrf import CSRFProtect
+from flask_login import login_user, current_user
 
 
 
@@ -29,7 +30,20 @@ def internal_server_error(e):
 
 @app.route("/")
 def home():
-    return render_template('home.html')
+    if current_user.is_authenticated: 
+        user = User.get_or_none(username = current_user.username)
+        if user is not None: 
+            followed = user.followed
+            user_arr = [] 
+            for i in followed:
+                user_arr.append(User.get_by_id(i.followed_id))
+        
+        else: 
+            flash('User does not exist!', 'danger')
+        return render_template('home.html', user_arr = user_arr)
+
+    else:
+        return render_template('sessions/new.html')
 
 oauth.init_app(app)
 

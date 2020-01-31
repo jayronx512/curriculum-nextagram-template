@@ -23,6 +23,34 @@ users_blueprint = Blueprint('users',
                             __name__,
                             template_folder='templates')
 
+@users_blueprint.route("/")
+def index():
+    users = User.select().where(User.id != current_user.id)
+    following_arr = []
+    for user in users:
+        if Follow.get_or_none(Follow.follower == current_user.id, Follow.followed == user.id):
+            following_arr.append({
+                "profile": user,
+                "status": True 
+            })
+        else: 
+            following_arr.append({
+                "profile": user,
+                "status": False
+            })
+    
+    # if user.username == current_user.username:
+    #     return render_template('users/profile.html', user = user, image = image, user_follower = user_follower, user_followed = user_followed)
+    # else: 
+    #     is_current_user_following = ""                
+    #     if Follow.get_or_none(Follow.follower == current_user.id, Follow.followed == user.id):
+    #         is_current_user_following = True
+    #     else:
+    #         is_current_user_following = False
+
+    # return render_template('users/profile.html', user = user, image = image, user_follower = user_follower, user_followed = user_followed, is_current_user_following = is_current_user_following)
+    return render_template("users/index.html", following_arr = following_arr)
+
 @users_blueprint.route("/signup")
 def signup():
     return render_template('users/new.html')

@@ -1,0 +1,46 @@
+{% extends "_layout.html" %}
+{% block content %}
+<style> 
+#row {
+  display: flex;
+  flex-direction: row;
+  margin-left: 500px;
+  margin-right: 500px;
+  justify-content: space-around;
+  text-align: center;
+  font-family: Patrick Hand;
+}
+
+</style>
+<div>
+        {% for profile in following_arr %}
+        <div id = "row">
+            {{profile.profile.username}}
+            {% if profile.status %}
+                <form action="{{url_for('users.unfollow', username = profile.profile.username)}}" method = "POST">
+                    <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
+                    <button type="submit" class="btn btn-primary" style="border-radius: 15px;">Unfollow</button>
+                </form>
+            {% else %}
+                <form action="{{url_for('users.follow', username = profile.profile.username)}}" method = "POST">
+                    <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
+                    <button type="submit" class="btn btn-primary" style="border-radius: 15px;">Follow</button>
+                </form>
+            {% endif %}
+            <form action="{{url_for('users.show', username = profile.profile.username)}}">
+                <button type="submit" class="btn btn-primary" style="border-radius: 15px;">Visit</button>
+            </form>
+        </div>
+        {% endfor %}
+
+
+{#% for user in users %}
+    <div id = "row">
+    {{user.username}}
+    <form action="{{url_for('users.show', username = user.username)}}">
+        <button type="submit" class="btn btn-primary" style="border-radius: 15px;">Visit</button>
+    </form>
+    </div>
+{% endfor %#}
+</div>
+{% endblock %}

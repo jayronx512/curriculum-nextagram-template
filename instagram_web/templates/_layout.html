@@ -83,6 +83,12 @@
         border: none; 
       }
 
+      #nav_child2v2 {
+        color:  #fffbd5;
+        background-color: inherit;
+        border: none; 
+      }
+
       #dropdownMenuButton {
         color:  #fffbd5;
         background-color: inherit;
@@ -188,6 +194,12 @@
       <div id="nav_child1v2">
         <form action="{{url_for('sessions.login_google')}}">
           <button type="submit" class="nav-link grow" id="nav_child1v2">Connect with Google</button>
+        </form>
+      </div>
+
+      <div id="nav_child2v2">
+        <form action="{{url_for('users.index')}}">
+          <button type="submit" class="nav-link grow" id="nav_child2v2">All</button>
         </form>
       </div>
       

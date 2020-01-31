@@ -5,6 +5,7 @@ S3_SECRET                 = os.environ.get("S3_SECRET_ACCESS_KEY")
 S3_LOCATION               = 'http://{}.s3.amazonaws.com/'.format(S3_BUCKET)
 GOOGLE_CLIENT_ID          = os.environ.get("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET      = os.environ.get("GOOGLE_CLIENT_SECRET")
+
 class Config(object):
     DEBUG = False
     TESTING = False

@@ -1,12 +1,47 @@
 {% extends "_layout.html" %}
 
+
 {% block title %}
 Home
 {% endblock %}
 
 {% block content %}
+<style>
+  img {
+    border-style: solid;
+    border-width: thin;
+    width:200px;
+    height: 200px;
+  }
+
+  #profile_pic {
+  display: inline-block;
+  width: 50px;
+  height: 50px; 
+  border-radius: 50%;
+  overflow: hidden;
+}
+</style>
   <h2>Homepage</h2>  
 
+{% for user in user_arr %}
+  <div>
+    {% if user.profile_pic %}
+    <img id = "profile_pic" src = "{{user.image_path}}">
+    {% else %}
+    <img id = "profile_pic" src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSo_HDyoYqHSQ5jx4uhfKVv86BKFo6ZBTyRxYAYdu3J8DHb_t6g&s">
+    {% endif %}
+    <a href="http://localhost:5000/users/{{user.username}}">{{user.username}} </a>
+
+    {% if user.image %}
+      {% for image in user.image %}
+        <img id="images" src = "{{image.image_path}}">
+      {% endfor %}
+    {% else %}
+      <p>This user has not uploaded any photos!</p>
+    {% endif %}
+  </div>
+{% endfor %}
 
 
 {% endblock %}

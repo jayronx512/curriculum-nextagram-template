@@ -58,6 +58,7 @@ def create_purchase(img_id):
             except Exception as e:
                 print(str(e))
 
+            flash(f"Transaction successful! Thanks on the behalf of Nextagram and {image_owner.username}!", 'success')
             return redirect(url_for('home'))
         else:
             return render_template('payment/new.html')
