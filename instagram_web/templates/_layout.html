@@ -145,12 +145,7 @@
       </div>
 
       {% if current_user.is_authenticated %} 
-      <div id = "nav_child4">
-        <form action="{{url_for('sessions.logout')}}" method = "POST">
-        <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
-        <button type="submit" class="nav-link grow" id = "nav_child4">Logout</button>
-        </form>
-      </div>
+
 
       <div id = "nav_child5">
         <div class="dropdown">
@@ -158,16 +153,20 @@
             Edit
           </button>
           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id=dropdownBackground>
-            <a><form action="{{url_for('users.edit')}}">
+            <a><form action="{{url_for('users.edit')}}", method = "POST">
+              <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
             <button type="submit" class="nav-link grow" id = "nav_child5"  >Edit Username</button>
             </form> </a>
-            <a> <form action="{{url_for('users.edit_email')}}">
+            <a> <form action="{{url_for('users.edit_email')}}", method = "POST">
+              <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
             <button type="submit" class="nav-link grow" id = "nav_child5">Edit Email</button>
             </form></a>
-            <a> <form action="{{url_for('users.edit_pw')}}">
+            <a> <form action="{{url_for('users.edit_pw')}}", method = "POST">
+              <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
             <button type="submit" class="nav-link grow" id = "nav_child5">Edit Password</button>
             </form></a>
-            <form action="{{url_for('users.edit_profile_pic')}}">
+            <form action="{{url_for('users.edit_profile_pic')}}", method = "POST">
+              <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
             <button type="submit" class="nav-link grow" id = "nav_child5" >Edit PP</button>
             </form>
             <form action="{{url_for('users.privacy_form')}}", method = "POST">
@@ -209,6 +208,13 @@
         </form>
       </div>
 
+      <div id = "nav_child4">
+        <form action="{{url_for('sessions.logout')}}" method = "POST">
+        <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
+        <button type="submit" class="nav-link grow" id = "nav_child4">Logout</button>
+        </form>
+      </div>
+
 
       {% else %}
       <div id="nav_child9">
@@ -225,7 +231,7 @@
     {%if errors%}
     {% with messages = get_flashed_messages() %}
       {% if messages %}
-        <div class="alert alert-danger" role="alert">
+        <div style = "height: 50px;" class="alert alert-danger" role="alert">
         {% for message in messages %}
           {{ message }}
           <br />
@@ -237,7 +243,7 @@
     {% else %}  
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
-      <div>
+      <div style = "height: 50px;">
       {% for category, message in messages %}
         <div class = "alert alert-{{category}}" role = "alert">{{ message }} </div>
         <br />

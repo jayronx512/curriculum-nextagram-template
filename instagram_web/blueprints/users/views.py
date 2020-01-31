@@ -3,6 +3,7 @@ from flask import Blueprint, render_template, request, url_for, flash, redirect
 from models.user import User
 from models.images import Image
 from models.follow import Follow
+from models.payment import Payment
 from flask_wtf.csrf import CSRFProtect
 from flask_login import login_user, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -25,20 +26,23 @@ users_blueprint = Blueprint('users',
 
 @users_blueprint.route("/")
 def index():
-    users = User.select().where(User.id != current_user.id)
-    following_arr = []
-    for user in users:
-        if Follow.get_or_none(Follow.follower == current_user.id, Follow.followed == user.id):
-            following_arr.append({
-                "profile": user,
-                "status": True 
-            })
-        else: 
-            following_arr.append({
-                "profile": user,
-                "status": False
-            })
-    
+    if current_user.is_authenticated: 
+        users = User.select().where(User.id != current_user.id)
+        following_arr = []
+        for user in users:
+            if Follow.get_or_none(Follow.follower == current_user.id, Follow.followed == user.id):
+                following_arr.append({
+                    "profile": user,
+                    "status": True 
+                })
+            else: 
+                following_arr.append({
+                    "profile": user,
+                    "status": False
+                })
+    else: 
+        return render_template('users/login_status.html')
+        
     # if user.username == current_user.username:
     #     return render_template('users/profile.html', user = user, image = image, user_follower = user_follower, user_followed = user_followed)
     # else: 
@@ -79,11 +83,11 @@ def signup_form():
     #     # flash(User.errors[0])
         return render_template('users/new.html', errors=new_user.errors)
 
-@users_blueprint.route("/edit")
+@users_blueprint.route("/edit", methods = ["POST"])
 def edit():
     return render_template('users/edit.html')
 
-@users_blueprint.route("/edit_email")
+@users_blueprint.route("/edit_email", methods = ["POST"])
 def edit_email():
     return render_template('users/edit_email.html')
 
@@ -194,7 +198,7 @@ def edit_pw_form():
         flash('No user logged in','danger')
         return render_template('users/edit_pw.html')
 
-@users_blueprint.route('/edit_profile_pic')
+@users_blueprint.route('/edit_profile_pic', methods = ["POST"])
 def edit_profile_pic():
     return render_template('users/edit_profile_pic.html')
 
@@ -226,12 +230,7 @@ def new():
     return render_template('users/new.html')
 
 
-@users_blueprint.route('/', methods=['POST'])
-def create():
-    pass
-
-
-@users_blueprint.route('/<username>', methods=["GET"])
+@users_blueprint.route('/<username>/show', methods=["GET"])
 def show(username): 
     # username = request.args.get('search_user')
     user = User.get_or_none(username = username)
@@ -270,12 +269,18 @@ def show(username):
 
 @users_blueprint.route('/search', methods=["GET"])
 def search():
-    search = request.args.get("search_user")
-    return redirect(url_for('users.show', username = search))
+    if current_user.is_authenticated:
+        search = request.args.get("search_user")
+        return redirect(url_for('users.show', username = search))
+    else: 
+        return render_template('users/login_status.html')
 
 @users_blueprint.route('/upload', methods=["GET"])
 def upload():
-    return render_template('users/upload.html')
+    if current_user.is_authenticated:
+        return render_template('users/upload.html')
+    else: 
+        return render_template('users/login_status.html')
 
 @users_blueprint.route('/upload_form', methods = ["POST"])
 def upload_form():  
@@ -296,6 +301,54 @@ def upload_form():
         if new_image.save(): 
             # breakpoint()
             return redirect(url_for('users.upload'))
+
+@users_blueprint.route("/delete/<img_id>", methods = ["POST"])
+def delete_image(img_id):
+    image = Image.get_or_none(id = img_id)
+    user = User.get_or_none(id = image.user_id) 
+    for i in image.donation:
+        query = Payment.get_or_none(id = i)
+        if query:
+            query.delete_instance()
+        else: 
+            if image.delete_instance():
+                flash(f"Image ({img_id}) has successfully been removed!", "success")
+                return redirect(url_for('users.show', username = user.username))
+            
+    if image.delete_instance():
+        flash(f"Image ({img_id}) has successfully been removed!", "success")
+        return redirect(url_for('users.show', username = user.username))
+
+    else: 
+        flash("Removing image failed", 'danger')
+        return redirect(url_for('users.show', username = user.username))
+        
+    # if image.delete_instance():
+    #     flash(f"Image ({img_id}) has successfully been removed!", "success")
+    #     return redirect(url_for('users.show', username = user.username))
+    
+    # else: 
+    #     flash("Removing image failed", 'danger')
+    #     return redirect(url_for('users.show', username = user.username))
+    # breakpoint()
+    # if payments:
+    #     for payments in payments:
+    #         payments.delete_instance()
+    #     if image.delete_instance():
+    #         flash(f"Image ({img_id}) has successfully been removed!", "success")
+    #         return redirect(url_for('users.show', username = user.username))
+    #     else: 
+    #         flash("Removing image failed", 'danger')
+    #         return redirect(url_for('users.show', username = user.username))
+    # else:
+    #     if image.delete_instance():
+    #         flash(f"Image ({img_id}) has successfully been removed!", "success")
+    #         return redirect(url_for('users.show', username = user.username))
+    #     else: 
+    #         flash("Removing image failed", 'danger')
+    #         return redirect(url_for('users.show', username = user.username))
+
+   
 
 @users_blueprint.route('/privacy_form', methods=["POST"])
 def privacy_form():
@@ -360,7 +413,6 @@ def unfollow(username):
             return redirect(url_for('users.show', username = username))
 
 
-
 @users_blueprint.route(f'/follow/public/<username>/{timestamp}', methods = ["GET"])
 def follow_public(username):
     user = User.get_or_none(username = username)
@@ -372,8 +424,6 @@ def follow_public(username):
         else: 
             flash("Follow failed!", 'danger')
             return render_template("users/profile.html")
-   
-    
 
 
 

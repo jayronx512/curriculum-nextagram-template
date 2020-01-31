@@ -11,7 +11,6 @@ Home
     border-style: solid;
     border-color: #b20a2c;
     border-width: 5px;
-    width:200px;
     height: 200px;
     margin: 10px 5px 10px 5px;
   }
@@ -46,8 +45,7 @@ Home
   }
   
   #content {
-    display: flex;
-    flex-wrap: wrap;
+    display: inline-block;
   }
 
   #child3 {
@@ -70,14 +68,11 @@ Home
     <a style="display:inline-block; align-items: center;" href="http://localhost:5000/users/{{user.username}}">{{user.username}} </a>
     </div>
 
-    
     {% if user.image %}
     <div id = "content">
       {% for image in user.image %}
         <img id="images" src = "{{image.image_path}}">
       {% endfor %}
-
- 
     </div>
     {% else %}
     <div id= "child3">

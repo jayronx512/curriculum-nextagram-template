@@ -23,8 +23,11 @@ payment_blueprint = Blueprint('payment',
 
 @payment_blueprint.route("/<img_id>", methods = ["GET"])
 def payment(img_id):
-    token = gateway.client_token.generate()
-    return render_template('payment/new.html', token = token, img_id = img_id)
+    if current_user.is_authenticated:
+        token = gateway.client_token.generate()
+        return render_template('payment/new.html', token = token, img_id = img_id)
+    else: 
+        return render_template('users/login_status.html')
 
 @payment_blueprint.route("/<img_id>", methods = ["POST"])
 def create_purchase(img_id): 

@@ -33,7 +33,6 @@ img {
   border-style: solid;
   border-color: #b20a2c;
   border-width: 5px;
-  width:200px;
   height: 200px;
   margin: 10px 10px 5px 5px; 
 }
@@ -66,37 +65,36 @@ img {
     <img id = "profile_pic" src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSo_HDyoYqHSQ5jx4uhfKVv86BKFo6ZBTyRxYAYdu3J8DHb_t6g&s">
     {% endif %}
     </div>
-
     <div id="detail_child">
-    {% if not is_current_user_following and user.security %}
-    <t> This user is private! </t>
+      <h1>{{user.username}}'s</h1>
+    {% if not is_current_user_following and user.security and not current_user.username == user.username %}
+      <t> This user is private! </t>
     {% if pending %}
-    <button type="disabled" class="btn btn-primary" style="border-radius: 15px;">Pending</button>
+      <button type="disabled" class="btn btn-primary" style="border-radius: 15px;">Pending</button>
     {% elif is_current_user_following %}
-    <form action="{{url_for('users.unfollow', username = user.username)}}" method = "POST">
-      <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
-    <button type="submit" class="btn btn-primary" style="border-radius: 15px;">Unfollow</button>
-  </form>
+      <form action="{{url_for('users.unfollow', username = user.username)}}" method = "POST">
+        <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
+        <button type="submit" class="btn btn-primary" style="border-radius: 15px;">Unfollow</button>
+      </form>
     {% else %}
-    <form action="{{url_for('users.follow', username = user.username)}}" method = "POST">
-      <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
-      <button type="submit" class="btn btn-primary" style="border-radius: 15px;">Follow</button>
-    </form>
+      <form action="{{url_for('users.follow', username = user.username)}}" method = "POST">
+        <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
+        <button type="submit" class="btn btn-primary" style="border-radius: 15px;">Follow</button>
+      </form>
     {% endif %}
     {% else %}
-    <h1>{{user.username}}'s</h1>
     Hi {{user.username}}
     {% if current_user.username == user.username %}
     {% elif is_current_user_following %}
-    <form action="{{url_for('users.unfollow', username = user.username)}}" method = "POST">
-      <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
-    <button type="submit" class="btn btn-primary" style="border-radius: 15px;">Unfollow</button>
-  </form>
+      <form action="{{url_for('users.unfollow', username = user.username)}}" method = "POST">
+        <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
+      <button type="submit" class="btn btn-primary" style="border-radius: 15px;">Unfollow</button>
+      </form>
     {% else %}
-    <form action="{{url_for('users.follow', username = user.username)}}" method = "POST">
-      <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
-      <button type="submit" class="btn btn-primary" style="border-radius: 15px;">Follow</button>
-    </form>
+      <form action="{{url_for('users.follow', username = user.username)}}" method = "POST">
+        <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
+        <button type="submit" class="btn btn-primary" style="border-radius: 15px;">Follow</button>
+      </form>
     {% endif %}
     </div>
 </div>
@@ -105,11 +103,19 @@ img {
       {% for image in image %}
       <div style="display: flex; flex-direction: column;"> 
       <img src = "{{image.image_path}}">
+      {% if current_user.username == user.username %}
+      <form  style="justify-content: left; text-align: left;" action="{{url_for('users.delete_image', img_id = image.id)}}" method = "POST">
+        <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
+      <button type="submit" class="btn btn-primary" style="border-radius: 50%">x</button>
+      </form>
+      </div>
+      {%else%}
       <form action="{{url_for('payment.payment', img_id = image.id)}}">
         <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
       <button type="submit" class="btn btn-primary" style="border-radius: 15px;">Donate</button>
       </form>
       </div>
+      {% endif %}
       {% endfor %}
 </div>
 
