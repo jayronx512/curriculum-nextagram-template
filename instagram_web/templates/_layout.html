@@ -25,68 +25,17 @@
         color: #fffbd5;
       }
 
-      #nav_title { 
+      #nav_title, #nav_child1, #nav_child12, #nav_child3, #nav_child9 { 
         color: #fffbd5;  
       }
 
-      #nav_child1 {
-        color: #fffbd5;
-      }
 
-      #nav_child2 {
-        color: #fffbd5;
-      }
-
-      #nav_child3 {
-        color: #fffbd5;
-      }
-
-      #nav_child4 {
+      #nav_child4, #nav_child5, #nav_child6, #nav_child7, #nav_child1v2, #nav_child2v2 {
         margin: 0;
         border: none;
         color:  #fffbd5; 
         cursor: pointer;
         background-color: inherit;
-      }
-
-      #nav_child5 {
-        margin: 0;
-        border: none;
-        color:  #fffbd5; 
-        cursor: pointer;
-        background-color: inherit;
-      }
-
-      #nav_child6 {
-        margin: 0;
-        border: none; 
-        color: #fffbd5; 
-        cursor: pointer;
-        background-color: inherit;
-      }
-
-      #nav_child7 {
-        margin: 0;
-        border: none; 
-        color: #fffbd5; 
-        cursor: pointer;
-        background-color: inherit;
-      }
-
-      #nav_child9 {
-        color: #fffbd5;  
-      }
-
-      #nav_child1v2 {
-        color:  #fffbd5;
-        background-color: inherit;
-        border: none; 
-      }
-
-      #nav_child2v2 {
-        color:  #fffbd5;
-        background-color: inherit;
-        border: none; 
       }
 
       #dropdownMenuButton {
@@ -95,10 +44,16 @@
         border: none; 
       }
 
+      body, html {
+        height: 100%
+      }
+
       #background_image {
-        height: 2000px;
-        width: inherit;
+        height: 200%;
+        width: auto;
         background-image: url('https://www.elsetge.cat/myimg/f/48-486302_camera-hd-wallpapers-backgrounds-wallpaper-cute-camera-wallpaper.jpg');
+        background-position: center;
+        background-repeat: no-repeat;
         background-size: cover;
         opacity: 0.85;
       }
@@ -112,9 +67,6 @@
         font-size: 20px;
         background-color: rgb(184, 38, 38);
         border-radius: 20px;
-      }
-      .main {
-        opacity: 1; 
       }
 
     </style>
@@ -136,12 +88,16 @@
       </div>
     <nav class="nav">
     <div id = "nav_content">
-      <div id = "nav_child2">
-        <a class="nav-link grow" id="nav_child2" href="{{url_for('home')}}" >Home</a>
+      <div id="nav_child2">
+        <form action="{{url_for('home')}}">
+        <button type="submit" class="nav-link grow" id="nav_child6">Home</button>
+        </form> 
       </div>
       
-      <div id = "nav_child3">
-      <a class="nav-link active grow" id="nav_child2" href="{{url_for('users.signup')}}">Sign Up</a>
+      <div id="nav_child3">
+        <form action="{{url_for('users.signup')}}">
+        <button type="submit" class="nav-link grow" id="nav_child6">Sign Up</button>
+        </form> 
       </div>
 
       {% if current_user.is_authenticated %} 
@@ -149,7 +105,7 @@
 
       <div id = "nav_child5">
         <div class="dropdown">
-          <button class="btn btn-secondary dropdown-toggle grow" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <button class="btn btn-secondary dropdown-toggle grow" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="margin-top: 0px;">
             Edit
           </button>
           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id=dropdownBackground>
@@ -226,7 +182,7 @@
     </nav>
   </div>
 
-  <div id="flash">
+  <div id="flash" style="font-family: Patrick Hand">
     {% endblock %}
     {%if errors%}
     {% with messages = get_flashed_messages() %}

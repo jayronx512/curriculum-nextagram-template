@@ -55,15 +55,19 @@ img {
     background-color: rgb(184, 38, 38);
     border-radius: 20px;
   }
+
+  table {
+    margin: 10px 10px 10px 10px;
+  }
+
+  th {
+    padding: 10px 50px 10px 50px;
+  }
 </style>
 <div id = "profile_id">
 {% if current_user.is_authenticated %}
     <div id="profile_img">
-    {% if user.profile_pic %}
     <img id = "profile_pic" src = "{{user.image_path}}">
-    {% else %}
-    <img id = "profile_pic" src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSo_HDyoYqHSQ5jx4uhfKVv86BKFo6ZBTyRxYAYdu3J8DHb_t6g&s">
-    {% endif %}
     </div>
     <div id="detail_child">
       <h1>{{user.username}}'s</h1>
@@ -84,6 +88,18 @@ img {
     {% endif %}
     {% else %}
     Hi {{user.username}}
+    <table>
+      <tr>
+        <th><a style="color: #b20a2c" href="{{url_for('users.following_list', username=user.username)}}">Following</a></th>
+        <th><a style="color: #b20a2c" href="{{url_for('users.follower_list', username=user.username)}}">Followers</a></th>
+      </tr>
+
+      <tr>
+        <td>{{followed_count}}</td>
+        <td>{{follower_count}}</td>
+      </tr>
+
+    </table>
     {% if current_user.username == user.username %}
     {% elif is_current_user_following %}
       <form action="{{url_for('users.unfollow', username = user.username)}}" method = "POST">

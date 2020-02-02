@@ -239,11 +239,11 @@ def show(username):
             image = user.image
             user_follower = user.follower 
             user_followed = user.followed
-            
-
+            follower_count = len(user_follower)
+            followed_count = len(user_followed)
             if user.username == current_user.username:
                 # breakpoint()
-                return render_template('users/profile.html', user = user, image = image, user_follower = user_follower, user_followed = user_followed)
+                return render_template('users/profile.html', user = user, image = image, follower_count = follower_count, followed_count = followed_count)
             else: 
                 # for i in user_follower:
                 #     if i.follower_id == current_user.id:
@@ -258,7 +258,7 @@ def show(username):
                 else:
                     is_current_user_following = False
     
-            return render_template('users/profile.html', user = user, image = image, user_follower = user_follower, user_followed = user_followed, is_current_user_following = is_current_user_following)
+            return render_template('users/profile.html', user = user, image = image, follower_count = follower_count, followed_count = followed_count, is_current_user_following = is_current_user_following)
         
         else: 
             flash('This user doesn\'t exist','danger')
@@ -271,7 +271,14 @@ def show(username):
 def search():
     if current_user.is_authenticated:
         search = request.args.get("search_user")
-        return redirect(url_for('users.show', username = search))
+        user = User.get_or_none(username = search)
+        # breakpoint()
+        if user is not None: 
+            return redirect(url_for('users.show', username = search))
+        
+        else: 
+            flash('This user doesn\'t exist', 'danger')
+            return render_template('users/user_existence.html', username = search)
     else: 
         return render_template('users/login_status.html')
 
@@ -424,6 +431,58 @@ def follow_public(username):
         else: 
             flash("Follow failed!", 'danger')
             return render_template("users/profile.html")
+
+@users_blueprint.route('/<username>/followers')
+def follower_list(username):
+    user = User.get_or_none(username = username)
+    arr = []
+    followers = Follow.select().where(Follow.followed_id == user.id)
+
+    if current_user.is_authenticated:
+        for follower in followers: 
+            follower_details = User.get_or_none(id = follower.follower_id)
+ 
+            if Follow.get_or_none(Follow.follower == current_user.id, Follow.followed == follower_details.id):
+                arr.append({
+                    "profile": follower_details,
+                    "status": True
+                })
+
+            else: 
+                arr.append({
+                    "profile": follower_details,
+                    "status": False
+                })
+    else: 
+        return render_template('users/login_status.html')
+    
+    return render_template('users/follower.html', followers = arr)
+
+@users_blueprint.route('/<username>/followings')
+def following_list(username):
+    user = User.get_or_none(username = username)
+    arr = []
+    followings = Follow.select().where(Follow.follower_id == user.id)
+
+    if current_user.is_authenticated:
+        for following in followings: 
+            following_details = User.get_or_none(id = following.followed_id)
+            if Follow.get_or_none(Follow.follower == current_user.id, Follow.followed == following_details.id):
+                arr.append({
+                    "profile": following_details,
+                    "status": True
+                })
+
+            else: 
+                arr.append({
+                    "profile": following_details,
+                    "status": False
+                })
+    else: 
+        return render_template('users/login_status.html')
+    
+    return render_template('users/following.html', followings = arr)
+
 
 
 

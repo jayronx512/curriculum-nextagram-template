@@ -9,6 +9,7 @@
     border-radius: 15px;
     width: 100px;
     height:40px;
+    margin: 5px 0px 5px 0px;
 }
 
   .btn:hover {
@@ -26,10 +27,27 @@
       border-spacing: 2px;
       font-family: Patrick Hand;
       text-align: center;
+
+  }
+  
+  th {
+      height: 30px;
+      border-bottom: 1px solid  #b20a2c;
+  }
+  tr:nth-child(even) {
+      background-color: beige;
   }
 
+  tr:hover {
+      background-color:darksalmon;
+  }
 
-
+  img {
+    width: 20px;
+    height: 20px; 
+    border-radius: 50%;
+    overflow: hidden;
+  }
 
 </style>
      <div id = "row"></div>
@@ -40,9 +58,11 @@
         </tr>
         {% for profile in following_arr %}
                 <tr>   
-                    <td>{{profile.profile.username}}</td>
+                    <td>
+                        <img src = "{{profile.get('profile').image_path}}">
+                        {{profile.get('profile').username}}</td>
                  
-                    <td style='white-space: nowrap;'>
+                    <td>
                     {% if profile.status %}
                         <form style = "display: inline-block; width: 150px;" action="{{url_for('users.unfollow', username = profile.profile.username)}}" method = "POST">
                             <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>

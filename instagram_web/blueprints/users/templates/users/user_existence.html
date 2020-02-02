@@ -5,8 +5,57 @@ Error
 {% endblock %}
 
 {% block content %}
+<style> 
+h1 {
+    font-family: Patrick Hand;
+    text-align: center;
+}
 
-<h1>Bollocks! {{username}} does not exist!</h1>
+h2 {
+    font-family: Patrick Hand;
+    text-align: center;
+}
+
+a {
+    font-family: Patrick Hand;
+    color: #b20a2c;
+}
+
+a:hover {
+    color: darkred;
+}
+
+#wrap {
+    border-style: solid;
+    margin: 20px 100px 20px 100px;
+    padding: 50px 50px 50px 50px;
+    border-radius: 20px;
+    border-color:  #b20a2c
+}
+
+#a {
+    display: block; 
+    text-align: center;
+    margin: 15px 0px 0px 0px;
+}
+
+#a1, #a2, #a3 {
+    margin: 0px 10px 0px 10px;
+}
+</style>
+<h1>Ooops! {{username}} does not exist!</h1>
+
+
+<div id="wrap">
+<h2>Seems like you have done some oopsies, may I redirect you somewhere?</h2>
+
+<div id = "a">
+<a id="a1" href="{{ url_for('home') }}">Homepage</a>
+<a id="a2" href="{{ url_for('sessions.login') }}">Sign In</a>
+<a id="a3" href="{{ url_for('users.signup') }}">Sign Up</a>
+</div>
+
+</div>
   
 {#{%endif%}#}
 {% endblock %}

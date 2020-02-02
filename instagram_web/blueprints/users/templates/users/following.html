@@ -1,0 +1,87 @@
+{% extends "_layout.html" %}
+
+{% block content %}
+<style>
+    .btn {
+    color:  #fffbd5;
+    background-color: #b20a2c;
+    border: none; 
+    border-radius: 15px;
+    width: 100px;
+    height:40px;
+    margin: 5px 0px 5px 0px;
+}
+
+  .btn:hover {
+    font-weight:bold;
+    font-size: 20px;
+    background-color: rgb(184, 38, 38);
+    border-radius: 20px;
+  }
+
+  table {
+      display: table;
+      table-layout: fixed;
+      border-collapse: collapse;
+      width: 100%;
+      border-spacing: 2px;
+      font-family: Patrick Hand;
+      text-align: center;
+
+  }
+
+    img {
+        width: 20px;
+        height: 20px; 
+        border-radius: 50%;
+        overflow: hidden;
+    }
+
+    th {
+      height: 30px;
+      border-bottom: 1px solid  #b20a2c;
+    }
+    tr:nth-child(even) {
+        background-color: beige;
+    }
+
+    tr:hover {
+        background-color:darksalmon;
+    }
+</style>
+
+<div>
+    <table>
+        <tr>
+            <th>Username</th>
+            <th></th>
+        </tr>
+        
+        <tr>
+        {% for following in followings %}
+        <td>
+            {{following.profile.username}}
+        </td>
+
+        <td>
+        {% if current_user.username == following.profile.username %}
+        {% elif following.status %}
+        <form style = "display: inline-block; width: 150px;" action="{{url_for('users.unfollow', username = following.profile.username)}}" method = "POST">
+            <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
+            <button type="submit" class="btn btn-primary" style = "background-color: darkred;">Unfollow</button>
+        </form>
+        {% else %}
+            <form style = "display: inline-block; width: 150px;" action="{{url_for('users.follow', username = following.profile.username)}}" method = "POST">
+                <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
+                <button type="submit" class="btn btn-primary" >Follow</button>
+            </form>
+        {% endif %}
+            <form style = "display: inline-block; width: 150px;" action="{{url_for('users.show', username = following.profile.username)}}">
+                <button type="submit" class="btn btn-primary" >Visit</button>
+            </form>
+        </td>
+        </tr>
+        {% endfor %}
+    </table>
+    </div>
+{% endblock %}

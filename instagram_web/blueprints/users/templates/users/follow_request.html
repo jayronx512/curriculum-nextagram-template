@@ -1,9 +1,35 @@
-<html>
-<h1> Follow Request!</h1>
 
-<a href = "http://localhost:5000/users/follow/public/{{user.username}}/{{timestamp}}">Accept</a><a href = "http://google.com">Ignore</a>
-<form action="{{url_for('users.follow', username = user.username)}}" method = "POST">
-    <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
-  <button type="submit" class="btn btn-primary" style="border-radius: 15px;">Accept</button>
-</form>
+<html lang="en" dir="ltr">
+
+<style>
+div {
+  font-family: "Comic Sans MS", cursive, sans-serif;
+  text-align: center;
+  color: #b20a2c;
+  background-color: #fffbd5;
+}
+
+img {
+        width: 20px;
+        height: 20px; 
+        border-radius: 50%;
+        overflow: hidden;
+}
+
+</style>
+
+
+<div id="request">
+<h1> Follow Request!</h1>
+<div>
+<p>{{user.username}}, {{current_user.username}} has send you a follow request! </p>
+<p>Click accept to allow{{current_user.username}} to view your content! Psst, you can ignore the request too.</p>
+</div>
+<div>
+<a href = "http://localhost:5000/users/follow/public/{{user.username}}/{{timestamp}}">Accept</a>
+<a href = "http://localhost:5000/">Ignore</a>
+</div>
+
+</div>
+
 </html>

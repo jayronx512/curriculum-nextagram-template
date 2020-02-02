@@ -34,7 +34,10 @@ class User(BaseModel, UserMixin):
     
     @hybrid_property
     def image_path(self):
-        return S3_LOCATION + self.profile_pic
+        if self.profile_pic:
+            return S3_LOCATION + self.profile_pic
+        else: 
+            return "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSo_HDyoYqHSQ5jx4uhfKVv86BKFo6ZBTyRxYAYdu3J8DHb_t6g&s"
 
     # @hybrid_property
     # def image_domain(self):

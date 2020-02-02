@@ -47,7 +47,7 @@ def create_purchase(img_id):
             image = Image.get_or_none(id = img_id)
             image_owner = User.get_or_none(id = image.user_id)
             message = Mail(
-            from_email=current_user.email,
+            from_email="nextagram@gmail.com",
             to_emails= image_owner.email,
             subject= f"Donation from {current_user.username}",
             html_content=f'<strong>A donation of RM{amount} is made on your image{img_id} from {current_user.username}</strong>')
