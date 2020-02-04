@@ -10,6 +10,8 @@ class Payment(BaseModel):
     payment = pw.DecimalField(decimal_places=2)
     message = pw.TextField(null=True)
 
+    
+
 
 
 

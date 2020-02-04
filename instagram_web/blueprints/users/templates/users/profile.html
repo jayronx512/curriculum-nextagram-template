@@ -63,6 +63,11 @@ img {
   th {
     padding: 10px 50px 10px 50px;
   }
+
+  #x {
+    position: absolute;
+    right: 0;
+  }
 </style>
 <div id = "profile_id">
 {% if current_user.is_authenticated %}
@@ -73,21 +78,26 @@ img {
       <h1>{{user.username}}'s</h1>
     {% if not is_current_user_following and user.security and not current_user.username == user.username %}
       <t> This user is private! </t>
+    
     {% if pending %}
       <button type="disabled" class="btn btn-primary" style="border-radius: 15px;">Pending</button>
+    </div>
     {% elif is_current_user_following %}
       <form action="{{url_for('users.unfollow', username = user.username)}}" method = "POST">
         <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
         <button type="submit" class="btn btn-primary" style="border-radius: 15px;">Unfollow</button>
       </form>
+    </div>
     {% else %}
       <form action="{{url_for('users.follow', username = user.username)}}" method = "POST">
         <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
         <button type="submit" class="btn btn-primary" style="border-radius: 15px;">Follow</button>
       </form>
+    </div>
     {% endif %}
+  </div>
     {% else %}
-    Hi {{user.username}}
+    {{user.description}}
     <table>
       <tr>
         <th><a style="color: #b20a2c" href="{{url_for('users.following_list', username=user.username)}}">Following</a></th>
@@ -117,13 +127,17 @@ img {
 <br>
 <div id = "images">
       {% for image in image %}
-      <div style="display: flex; flex-direction: column;"> 
+      <div style="position: relative; display: flex; flex-direction: column;"> 
       <img src = "{{image.image_path}}">
+      <span style="color: #b20a2c;">Made: ${{image.count()}}</span>
+      <span style="color: #b20a2c;">Posted at: {{image.created_at.strftime('%b %d %Y')}}</span>
       {% if current_user.username == user.username %}
-      <form  style="justify-content: left; text-align: left;" action="{{url_for('users.delete_image', img_id = image.id)}}" method = "POST">
-        <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
-      <button type="submit" class="btn btn-primary" style="border-radius: 50%">x</button>
-      </form>
+        <div id="x">
+          <form action="{{url_for('users.delete_image', img_id = image.id)}}" method = "POST">
+            <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
+          <button type="submit" class="btn btn-primary" style=" border-radius: 100%">x</button>
+          </form>
+        </div>
       </div>
       {%else%}
       <form action="{{url_for('payment.payment', img_id = image.id)}}">

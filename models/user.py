@@ -11,6 +11,7 @@ class User(BaseModel, UserMixin):
     username = pw.CharField(unique=False)
     email = pw.CharField(unique=True)
     password = pw.CharField(unique=False)
+    description = pw.CharField(default="Welcome to my space!")
     profile_pic = pw.TextField(null=True)
     security = pw.BooleanField(default=False)
 
@@ -31,7 +32,13 @@ class User(BaseModel, UserMixin):
             self.errors.append('Password must have at least 1 special character!')
 
         self.password = generate_password_hash(self.password)
-    
+
+    def followers(self):
+        return ([i.follower for i in self.follower])
+
+    def followings(self):
+        return ([i.followed for i in self.followed])
+
     @hybrid_property
     def image_path(self):
         if self.profile_pic:

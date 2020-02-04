@@ -1,0 +1,65 @@
+{% extends "_layout.html" %}
+{% block content %}
+<style>
+
+  #parent{
+    display: flex; 
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    font-family: Patrick Hand; 
+  }
+  #basic-addon1 {
+    width: 40px;
+    color: #fffbd5;
+    background-color: #b20a2c;
+  }
+
+  .form-control {
+      max-width: 300px;
+  }
+
+  #form {
+    padding: 50px 50px 100px 50px;
+    border-style: solid;
+    width: 400px;
+    border-radius: 50px;
+    color: #b20a2c
+  }
+
+  .btn {
+    background-color: #b20a2c;
+    color: #fffbd5;
+    border: none;
+  }
+
+  .btn:hover {
+    font-weight:bold;
+    background-color: rgb(184, 38, 38);
+    border-radius: 20px;
+  }
+
+
+</style>
+
+<br>
+<div id = "parent">
+<form action="{{url_for('users.edit_description_form')}}" method="POST" id = "form">
+    <div id="child1">
+    <h1>Update Description</h1>
+    <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="basic-addon1">t</span>
+        </div><textarea class="form-control" placeholder="Description" aria-label="Description" aria-describedby="basic-addon1" name="description"></textarea>
+    </div>
+  </div>
+
+  <div id = "child2">
+    <button type="submit" class="btn btn-primary" style="border-radius: 15px;">Submit</button>
+  </div>
+</form>
+</div>
+{% endblock %}
+

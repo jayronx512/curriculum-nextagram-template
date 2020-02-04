@@ -5,7 +5,7 @@ from models.images import Image
 from models.follow import Follow
 from models.payment import Payment
 from flask_wtf.csrf import CSRFProtect
-from flask_login import login_user, current_user
+from flask_login import login_user, current_user, login_required
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 from instagram_web.util.helpers import upload_file_to_s3, allowed_file
@@ -65,11 +65,12 @@ def signup_form():
     email = request.form.get('email')
     password = request.form.get('password')
     retype_password = request.form.get('retype_password')
+    description = request.form.get('description')
     # hashed_password = generate_password_hash(password)
     if password != retype_password:
         flash('Password and Retyped Password are different','warning')
         return render_template('users/new.html')
-    new_user = User(username=username, email=email, password=password)
+    new_user = User(username=username, email=email, password=password, description = description)
     
     if new_user.save():
         flash('New user created!', 'success')
@@ -83,17 +84,34 @@ def signup_form():
     #     # flash(User.errors[0])
         return render_template('users/new.html', errors=new_user.errors)
 
-@users_blueprint.route("/edit", methods = ["POST"])
+@users_blueprint.route("/edit")
 def edit():
-    return render_template('users/edit.html')
+    if current_user.is_authenticated:
+        return render_template('users/edit.html')
 
-@users_blueprint.route("/edit_email", methods = ["POST"])
+    else: 
+        return render_template('users/login_status.html')
+
+@users_blueprint.route("/edit_email")
 def edit_email():
-    return render_template('users/edit_email.html')
+    if current_user.is_authenticated:
+        return render_template('users/edit_email.html')
+    else: 
+        return render_template('users/login_status.html')
 
 @users_blueprint.route("/edit_password")
 def edit_pw():
-    return render_template('users/edit_pw.html')
+    if current_user.is_authenticated:
+        return render_template('users/edit_pw.html')
+    else: 
+        return render_template('users/login_status.html')
+
+@users_blueprint.route("/edit_description")
+def edit_description():
+    if current_user.is_authenticated:
+        return render_template('users/edit_description.html')
+    else: 
+        return render_template('users/login_status.html')
 
 @users_blueprint.route("/edit_form", methods = ["POST"])
 def edit_form(): 
@@ -124,7 +142,7 @@ def edit_form():
         flash('No user logged in', 'danger')
         return render_template('users/edit.html')
 
-@users_blueprint.route("/edit_email", methods = ["POST"])
+@users_blueprint.route("/edit_email_form", methods = ["POST"])
 def edit_email_form(): 
     new_email = request.form.get("new_email")
     check_password = request.form.get("check_password")
@@ -159,7 +177,7 @@ def edit_email_form():
         flash('No user logged in', 'error')
         return render_template('users/edit_email.html')
 
-@users_blueprint.route("/edit_pw", methods = ["POST"])
+@users_blueprint.route("/edit_pw_form", methods = ["POST"])
 def edit_pw_form(): 
     old_password = request.form.get("old_password")
     check_password = request.form.get("check_old_password")
@@ -197,6 +215,17 @@ def edit_pw_form():
     else: 
         flash('No user logged in','danger')
         return render_template('users/edit_pw.html')
+
+@users_blueprint.route('/edit_description_form', methods = ["POST"])
+def edit_description_form():
+    description = request.form.get('description')
+    query = User.update(description=description).where(User.id == current_user.id)
+    if query.execute():
+        flash('Description updated!', 'success')
+        return redirect(url_for('home'))
+    else: 
+        flash('Description not updated!', 'danger')
+        return render_template('users/edit_description.html')
 
 @users_blueprint.route('/edit_profile_pic', methods = ["POST"])
 def edit_profile_pic():
@@ -438,19 +467,38 @@ def follower_list(username):
     arr = []
     followers = Follow.select().where(Follow.followed_id == user.id)
 
-    if current_user.is_authenticated:
-        for follower in followers: 
-            follower_details = User.get_or_none(id = follower.follower_id)
+    # if current_user.is_authenticated:
+    #     for follower in followers: 
+    #         follower_details = User.get_or_none(id = follower.follower_id)
  
-            if Follow.get_or_none(Follow.follower == current_user.id, Follow.followed == follower_details.id):
+    #         if Follow.get_or_none(Follow.follower == current_user.id, Follow.followed == follower_details.id):
+    #             arr.append({
+    #                 "profile": follower_details,
+    #                 "status": True
+    #             })
+
+    #         else: 
+    #             arr.append({
+    #                 "profile": follower_details,
+    #                 "status": False
+    #             })
+    # else: 
+    #     return render_template('users/login_status.html')
+    
+    # return render_template('users/follower.html', followers = arr)
+    
+    followers = user.followers()
+    if current_user.is_authenticated:
+        for follower in followers:
+            if Follow.get_or_none(Follow.follower == current_user.id, Follow.followed == follower.id): 
                 arr.append({
-                    "profile": follower_details,
+                   "profile": follower,
                     "status": True
                 })
 
             else: 
                 arr.append({
-                    "profile": follower_details,
+                    "profile": follower,
                     "status": False
                 })
     else: 
