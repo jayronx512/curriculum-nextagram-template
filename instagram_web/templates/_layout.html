@@ -240,12 +240,12 @@
     {#<a class="nav-link disabled" href="#" >Disabled</a>#}
 <!-- </div> -->
 
-  <div id="flash" style="font-family: Patrick Hand">
+  <div id="flash" style="font-family: Patrick Hand; margin: 0;">
     {% endblock %}
     {%if errors%}
     {% with messages = get_flashed_messages() %}
       {% if messages %}
-        <div style = "height: 50px;" class="alert alert-danger" role="alert">
+        <div style = "margin: 0;" class="alert alert-danger" role="alert">
         {% for message in messages %}
           {{ message }}
           <br />
@@ -257,9 +257,9 @@
     {% else %}  
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
-      <div style = "height: 50px;">
+      <div style = "margin: 0;height: 50px;">
       {% for category, message in messages %}
-        <div class = "alert alert-{{category}}" role = "alert">{{ message }} </div>
+        <div class = "alert alert-{{category}}" style="margin:0; height:50px;" role = "alert">{{ message }} </div>
         <br />
       {% endfor %}
       

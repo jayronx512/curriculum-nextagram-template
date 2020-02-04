@@ -8,7 +8,7 @@ from playhouse.hybrid import hybrid_property
 from config import S3_LOCATION
 
 class User(BaseModel, UserMixin):
-    username = pw.CharField(unique=False)
+    username = pw.CharField(unique=True)
     email = pw.CharField(unique=True)
     password = pw.CharField(unique=False)
     description = pw.CharField(default="Welcome to my space!")
@@ -19,6 +19,10 @@ class User(BaseModel, UserMixin):
         duplicate_emails = User.get_or_none(User.email == self.email)
         if duplicate_emails:
             self.errors.append('Email has been used')
+
+        duplicate_user = User.get_or_none(User.username == self.username)
+        if duplicate_user: 
+            self.errors.append('Username has been used')
         
         if re.search('[A-Za-z0-9._%+-]+@+[A-Za-z]+[.]+[c][o][m]', self.email) is None:
             self.errors.append('Invalid email')
@@ -38,6 +42,10 @@ class User(BaseModel, UserMixin):
 
     def followings(self):
         return ([i.followed for i in self.followed])
+
+    
+
+    
 
     @hybrid_property
     def image_path(self):
